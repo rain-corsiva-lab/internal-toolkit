@@ -17,25 +17,23 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="staff" element={<StaffManagement />} />
-            <Route path="staff/edit/:id" element={<EditStaff />} />
-            <Route path="roles" element={<RoleManagement />} />
-            <Route path="clients" element={<ClientManagement />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <Toaster />
+    <Sonner />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="staff" element={<StaffManagement />} />
+          <Route path="staff/edit/:id" element={<EditStaff />} />
+          <Route path="roles" element={<RoleManagement />} />
+          <Route path="clients" element={<ClientManagement />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
