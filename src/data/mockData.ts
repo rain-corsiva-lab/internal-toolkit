@@ -206,6 +206,8 @@ export const mockClientPOCs: ClientPOC[] = [
     designation: "CTO",
     salesPIC: "2", // Sarah Johnson
     projectStatus: "Confirmed",
+    projectName: "Enterprise CRM System",
+    projectType: "Software Development",
     createdAt: "2023-01-15T00:00:00Z",
     updatedAt: "2024-01-06T00:00:00Z"
   },
@@ -218,6 +220,8 @@ export const mockClientPOCs: ClientPOC[] = [
     designation: "Project Manager",
     salesPIC: "2", // Sarah Johnson
     projectStatus: "Confirmed",
+    projectName: "Mobile App Development",
+    projectType: "Mobile Application",
     createdAt: "2023-01-15T00:00:00Z",
     updatedAt: "2024-01-06T00:00:00Z"
   },
@@ -230,6 +234,8 @@ export const mockClientPOCs: ClientPOC[] = [
     designation: "Operations Manager",
     salesPIC: "2", // Sarah Johnson
     projectStatus: "Quoted",
+    projectName: "Inventory Management Portal",
+    projectType: "Web Application",
     createdAt: "2023-03-20T00:00:00Z",
     updatedAt: "2024-01-05T00:00:00Z"
   },
@@ -242,6 +248,8 @@ export const mockClientPOCs: ClientPOC[] = [
     designation: "IT Director",
     salesPIC: "2", // Sarah Johnson
     projectStatus: "Confirmed",
+    projectName: "E-commerce Platform",
+    projectType: "Web Development",
     createdAt: "2023-05-10T00:00:00Z",
     updatedAt: "2024-01-04T00:00:00Z"
   }

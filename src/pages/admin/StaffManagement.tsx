@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Download, Edit, Trash2, Eye } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Plus, Search, Download, Edit, Trash2, Eye, Shield, Users } from "lucide-react";
 import { mockStaff, mockRoles } from "@/data/mockData";
-import { Staff, StaffFilters } from "@/types/admin";
+import { Staff, StaffFilters, Role } from "@/types/admin";
 import AddStaffForm from "@/components/admin/AddStaffForm";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -16,9 +18,12 @@ export default function StaffManagement() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [staff, setStaff] = useState<Staff[]>(mockStaff.filter(s => !s.isDeleted));
+  const [roles, setRoles] = useState<Role[]>(mockRoles);
   const [filters, setFilters] = useState<StaffFilters>({});
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showCreateRoleForm, setShowCreateRoleForm] = useState(false);
   const [editingRole, setEditingRole] = useState<string | null>(null);
 
   // Filter staff based on current filters
@@ -114,14 +119,74 @@ export default function StaffManagement() {
     });
   };
 
+  const getPermissionCount = (role: Role) => {
+    const allPermissions = Object.values(role.permissions).flatMap(p => Object.values(p));
+    return allPermissions.filter(p => p).length;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const PermissionMatrix = ({ permissions, readOnly = true }: { permissions: any, readOnly?: boolean }) => {
+    const modules = ['Staff Management', 'Role Management', 'Client Management'];
+    const actions = ['create', 'read', 'update', 'delete'];
+
+    return (
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              <th className="text-left p-2 border-b">Module/Role</th>
+              {roles.map(role => (
+                <th key={role.id} className="text-center p-2 border-b min-w-24">{role.name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {modules.map(module => (
+              <tr key={module}>
+                <td className="p-2 border-b font-medium">{module}</td>
+                {roles.map(role => {
+                  const moduleKey = module.replace(' Management', '').toLowerCase() + 's';
+                  const modulePerms = role.permissions[moduleKey as keyof typeof role.permissions];
+                  let access = "None";
+                  
+                  if (modulePerms) {
+                    const hasAll = modulePerms.create && modulePerms.read && modulePerms.update && modulePerms.delete;
+                    const hasRead = modulePerms.read;
+                    
+                    if (hasAll) access = "CRUD";
+                    else if (hasRead) access = "Read";
+                  }
+                  
+                  return (
+                    <td key={role.id} className="text-center p-2 border-b">
+                      <Badge 
+                        variant={access === "CRUD" ? "default" : access === "Read" ? "secondary" : "outline"}
+                        className="text-xs"
+                      >
+                        {access}
+                      </Badge>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Staff Management</h1>
+          <h1 className="text-2xl font-bold">Staff & Role Management</h1>
           <p className="text-muted-foreground">
-            Manage employee information and track login history
+            Manage employee information, roles, and permissions
           </p>
         </div>
         <Button onClick={() => setShowAddForm(true)}>
@@ -129,6 +194,14 @@ export default function StaffManagement() {
           Add New Staff
         </Button>
       </div>
+
+      <Tabs defaultValue="staff" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="staff">Staff Management</TabsTrigger>
+          <TabsTrigger value="roles">Role Management</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="staff" className="space-y-6">
 
       {/* Filters */}
       <Card>
@@ -293,6 +366,159 @@ export default function StaffManagement() {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="roles" className="space-y-6">
+          {/* Role Management Header */}
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-xl font-bold">Role Permissions</h2>
+              <p className="text-muted-foreground">
+                Management role details and permissions matrix
+              </p>
+            </div>
+            <Button onClick={() => setShowCreateRoleForm(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Role
+            </Button>
+          </div>
+
+          {/* Permission Matrix */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Role Permissions Matrix
+              </CardTitle>
+              <CardDescription>
+                Overview of permissions across all roles and modules
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PermissionMatrix permissions={{}} />
+            </CardContent>
+          </Card>
+
+          {/* Roles List */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                System Roles ({roles.length})
+              </CardTitle>
+              <CardDescription>
+                View and manage all system roles and their permissions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Role Name</TableHead>
+                      <TableHead>Permissions</TableHead>
+                      <TableHead>Last Updated</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {roles.map((role) => (
+                      <TableRow key={role.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            {role.name}
+                            {role.isDefault && (
+                              <Badge variant="secondary">Default</Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm text-muted-foreground">
+                            {getPermissionCount(role)} permissions enabled
+                          </div>
+                        </TableCell>
+                        <TableCell>{formatDate(role.lastUpdated)}</TableCell>
+                        <TableCell>
+                          <Badge variant="default">Active</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedRole(role)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              disabled={role.isDefault}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Staff Role Assignments */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Staff Role Assignments
+              </CardTitle>
+              <CardDescription>
+                View and manage role assignments for all staff members
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Staff Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Assigned Role</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {staff.map((member) => {
+                      const assignedRole = roles.find(role => role.id === member.roleId);
+                      return (
+                        <TableRow key={member.id}>
+                          <TableCell className="font-medium">{member.fullName}</TableCell>
+                          <TableCell>{member.workEmail}</TableCell>
+                          <TableCell>{member.department}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">
+                              {assignedRole?.name || "No Role"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button variant="ghost" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Staff Detail Modal */}
       {selectedStaff && (
@@ -361,6 +587,120 @@ export default function StaffManagement() {
                   Close
                 </Button>
                 <Button>Edit Staff</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Role Detail Modal */}
+      {selectedRole && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Role Details - {selectedRole.name}
+                {selectedRole.isDefault && (
+                  <Badge variant="secondary">Default Role</Badge>
+                )}
+              </CardTitle>
+              <CardDescription>
+                Detailed permissions and last updated: {formatDate(selectedRole.lastUpdated)}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h4 className="text-lg font-semibold mb-4">Permission Details</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <h5 className="font-medium mb-2">Staff Management</h5>
+                    <div className="space-y-1 text-sm">
+                      <div>Create: {selectedRole.permissions.staff?.create ? "✅" : "❌"}</div>
+                      <div>Read: {selectedRole.permissions.staff?.read ? "✅" : "❌"}</div>
+                      <div>Update: {selectedRole.permissions.staff?.update ? "✅" : "❌"}</div>
+                      <div>Delete: {selectedRole.permissions.staff?.delete ? "✅" : "❌"}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h5 className="font-medium mb-2">Role Management</h5>
+                    <div className="space-y-1 text-sm">
+                      <div>Create: {selectedRole.permissions.roles?.create ? "✅" : "❌"}</div>
+                      <div>Read: {selectedRole.permissions.roles?.read ? "✅" : "❌"}</div>
+                      <div>Update: {selectedRole.permissions.roles?.update ? "✅" : "❌"}</div>
+                      <div>Delete: {selectedRole.permissions.roles?.delete ? "✅" : "❌"}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h5 className="font-medium mb-2">Client Management</h5>
+                    <div className="space-y-1 text-sm">
+                      <div>Create: {selectedRole.permissions.clients?.create ? "✅" : "❌"}</div>
+                      <div>Read: {selectedRole.permissions.clients?.read ? "✅" : "❌"}</div>
+                      <div>Update: {selectedRole.permissions.clients?.update ? "✅" : "❌"}</div>
+                      <div>Delete: {selectedRole.permissions.clients?.delete ? "✅" : "❌"}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => setSelectedRole(null)}>
+                  Close
+                </Button>
+                {!selectedRole.isDefault && (
+                  <Button>Edit Permissions</Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Create Role Form Modal */}
+      {showCreateRoleForm && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle>Create New Role</CardTitle>
+              <CardDescription>
+                Define a new role with custom permissions
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Role Name</label>
+                <Input 
+                  placeholder="Enter role name"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <h4 className="text-lg font-semibold mb-4">Permissions</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {['Staff Management', 'Role Management', 'Client Management'].map(module => (
+                    <div key={module} className="space-y-2">
+                      <h5 className="font-medium">{module}</h5>
+                      {['create', 'read', 'update', 'delete'].map(action => (
+                        <div key={action} className="flex items-center space-x-2">
+                          <Checkbox id={`${module}-${action}`} />
+                          <label htmlFor={`${module}-${action}`} className="text-sm capitalize">
+                            {action}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => setShowCreateRoleForm(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => setShowCreateRoleForm(false)}>
+                  Create Role
+                </Button>
               </div>
             </CardContent>
           </Card>

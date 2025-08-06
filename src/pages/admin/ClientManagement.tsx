@@ -10,14 +10,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, Download, Edit, Eye, Building2, Users } from "lucide-react";
 import { mockClients, mockClientPOCs, getSalesStaff, getClientPOCsByClient } from "@/data/mockData";
 import { Client, ClientPOC, ClientFilters, POCFilters } from "@/types/admin";
+import AddClientForm from "@/components/admin/AddClientForm";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ClientManagement() {
+  const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>(mockClients);
   const [clientPOCs, setClientPOCs] = useState<ClientPOC[]>(mockClientPOCs);
   const [clientFilters, setClientFilters] = useState<ClientFilters>({});
   const [pocFilters, setPOCFilters] = useState<POCFilters>({});
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [selectedPOC, setSelectedPOC] = useState<ClientPOC | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const salesStaff = getSalesStaff();
 
@@ -71,7 +75,7 @@ export default function ClientManagement() {
   };
 
   const handleExportPOCsCSV = () => {
-    const headers = ["Contact Name", "Contact Number", "Contact Email Address", "Contact Designation", "Sales PIC", "Project Status"];
+    const headers = ["Contact Name", "Contact Number", "Contact Email Address", "Contact Designation", "Sales PIC", "Project Name", "Project Type", "Project Status"];
     const rows = filteredPOCs.map(poc => {
       const salesPerson = salesStaff.find(staff => staff.id === poc.salesPIC);
       return [
@@ -80,6 +84,8 @@ export default function ClientManagement() {
         poc.contactEmail,
         poc.designation,
         salesPerson?.fullName || "",
+        poc.projectName || "",
+        poc.projectType || "",
         poc.projectStatus
       ];
     });
@@ -97,6 +103,10 @@ export default function ClientManagement() {
     return status === "Confirmed" ? "default" : "secondary";
   };
 
+  const handleAddClient = (newClient: Client) => {
+    setClients([...clients, newClient]);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -107,7 +117,7 @@ export default function ClientManagement() {
             Manage client companies and their points of contact
           </p>
         </div>
-        <Button className="bg-admin-primary hover:bg-admin-primary-hover">
+        <Button onClick={() => setShowAddForm(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add New Client
         </Button>
@@ -296,6 +306,7 @@ export default function ClientManagement() {
                       <TableHead>Email</TableHead>
                       <TableHead>Designation</TableHead>
                       <TableHead>Sales PIC</TableHead>
+                      <TableHead>Project Name/Type</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -310,6 +321,14 @@ export default function ClientManagement() {
                           <TableCell>{poc.contactEmail}</TableCell>
                           <TableCell>{poc.designation}</TableCell>
                           <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <div className="font-medium text-sm">{poc.projectName || "N/A"}</div>
+                              <Badge variant="secondary" className="text-xs">
+                                {poc.projectType || "N/A"}
+                              </Badge>
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <Badge variant={getStatusBadge(poc.projectStatus)}>
                               {poc.projectStatus}
@@ -479,6 +498,14 @@ export default function ClientManagement() {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Add Client Form */}
+      {showAddForm && (
+        <AddClientForm 
+          onClose={() => setShowAddForm(false)}
+          onAdd={handleAddClient}
+        />
       )}
     </div>
   );

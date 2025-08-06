@@ -78,6 +78,8 @@ export interface ClientPOC {
   designation: string;
   salesPIC: string; // Staff ID from Sales Team
   projectStatus: "Quoted" | "Confirmed";
+  projectName?: string;
+  projectType?: string;
   createdAt: string;
   updatedAt: string;
 }
