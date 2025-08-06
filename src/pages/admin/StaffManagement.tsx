@@ -96,12 +96,12 @@ export default function StaffManagement() {
               />
             </div>
             
-            <Select value={filters.country || ""} onValueChange={(value) => setFilters({ ...filters, country: value || undefined })}>
+            <Select value={filters.country || "all"} onValueChange={(value) => setFilters({ ...filters, country: value === "all" ? undefined : value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by Country" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Countries</SelectItem>
+                <SelectItem value="all">All Countries</SelectItem>
                 <SelectItem value="Singapore">Singapore</SelectItem>
                 <SelectItem value="Malaysia">Malaysia</SelectItem>
                 <SelectItem value="Vietnam">Vietnam</SelectItem>
@@ -109,12 +109,12 @@ export default function StaffManagement() {
               </SelectContent>
             </Select>
 
-            <Select value={filters.department || ""} onValueChange={(value) => setFilters({ ...filters, department: value || undefined })}>
+            <Select value={filters.department || "all"} onValueChange={(value) => setFilters({ ...filters, department: value === "all" ? undefined : value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by Department" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Departments</SelectItem>
+                <SelectItem value="all">All Departments</SelectItem>
                 <SelectItem value="Management Team">Management Team</SelectItem>
                 <SelectItem value="Project Team">Project Team</SelectItem>
                 <SelectItem value="Sales Team">Sales Team</SelectItem>
