@@ -15,6 +15,7 @@ export interface Staff {
   isDeleted?: boolean;
   createdAt: string;
   updatedAt: string;
+  roleId?: string;
 }
 
 // Role Management Types

@@ -6,14 +6,20 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, Download, Edit, Trash2, Eye } from "lucide-react";
-import { mockStaff } from "@/data/mockData";
+import { mockStaff, mockRoles } from "@/data/mockData";
 import { Staff, StaffFilters } from "@/types/admin";
+import AddStaffForm from "@/components/admin/AddStaffForm";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function StaffManagement() {
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [staff, setStaff] = useState<Staff[]>(mockStaff.filter(s => !s.isDeleted));
   const [filters, setFilters] = useState<StaffFilters>({});
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingRole, setEditingRole] = useState<string | null>(null);
 
   // Filter staff based on current filters
   const filteredStaff = staff.filter(member => {
@@ -63,6 +69,51 @@ export default function StaffManagement() {
     return variants[type] || "default";
   };
 
+  const getRoleBadgeColor = (roleId?: string) => {
+    if (!roleId) return "bg-muted text-muted-foreground";
+    const role = mockRoles.find(r => r.id === roleId);
+    if (!role) return "bg-muted text-muted-foreground";
+    
+    const colors: Record<string, string> = {
+      "Management": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+      "Sales": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      "Project": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+      "Designer": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+      "Developer": "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
+    };
+    
+    return colors[role.name] || "bg-muted text-muted-foreground";
+  };
+
+  const handleAddStaff = (newStaff: Staff) => {
+    setStaff([...staff, newStaff]);
+  };
+
+  const handleDeleteStaff = (staffId: string) => {
+    setStaff(staff.filter(s => s.id !== staffId));
+    toast({
+      title: "Success",
+      description: "Staff member deleted successfully",
+    });
+  };
+
+  const handleEditStaff = (staffId: string) => {
+    navigate(`/admin/staff/edit/${staffId}`);
+  };
+
+  const handleRoleChange = (staffId: string, newRoleId: string) => {
+    setStaff(staff.map(s => 
+      s.id === staffId 
+        ? { ...s, roleId: newRoleId, updatedAt: new Date().toISOString() }
+        : s
+    ));
+    setEditingRole(null);
+    toast({
+      title: "Success",
+      description: "Staff role updated successfully",
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -73,7 +124,7 @@ export default function StaffManagement() {
             Manage employee information and track login history
           </p>
         </div>
-        <Button onClick={() => setShowAddForm(true)} className="bg-admin-primary hover:bg-admin-primary-hover">
+        <Button onClick={() => setShowAddForm(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add New Staff
         </Button>
@@ -151,6 +202,7 @@ export default function StaffManagement() {
                   <TableHead>Country</TableHead>
                   <TableHead>Department</TableHead>
                   <TableHead>Employment Type</TableHead>
+                  <TableHead>Assigned Role</TableHead>
                   <TableHead>Last Login</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -168,6 +220,46 @@ export default function StaffManagement() {
                         {member.employmentType}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                      {editingRole === member.id ? (
+                        <div className="flex items-center gap-2">
+                          <Select 
+                            value={member.roleId || ""} 
+                            onValueChange={(value) => handleRoleChange(member.id, value)}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue placeholder="Select role" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {mockRoles.map((role) => (
+                                <SelectItem key={role.id} value={role.id}>
+                                  {role.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingRole(null)}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <div 
+                          className="flex items-center gap-2 cursor-pointer"
+                          onClick={() => setEditingRole(member.id)}
+                        >
+                          <span 
+                            className={`px-2 py-1 rounded text-xs font-medium ${getRoleBadgeColor(member.roleId)}`}
+                          >
+                            {member.roleId ? mockRoles.find(r => r.id === member.roleId)?.name : "No Role"}
+                          </span>
+                          <Edit className="h-3 w-3 text-muted-foreground" />
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>{member.lastLoginDate || "Never"}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -178,10 +270,18 @@ export default function StaffManagement() {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleEditStaff(member.id)}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleDeleteStaff(member.id)}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -265,6 +365,14 @@ export default function StaffManagement() {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Add Staff Form */}
+      {showAddForm && (
+        <AddStaffForm 
+          onClose={() => setShowAddForm(false)}
+          onAdd={handleAddStaff}
+        />
       )}
     </div>
   );
