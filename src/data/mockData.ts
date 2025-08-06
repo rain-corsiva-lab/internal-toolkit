@@ -80,26 +80,35 @@ export const mockStaff: Staff[] = [
   }
 ];
 
-// Default Role Permissions
-const fullPermissions: RolePermissions = {
+// Mock Role and Permissions Data
+const managementPermissions: RolePermissions = {
   staff: { create: true, read: true, update: true, delete: true },
   roles: { create: true, read: true, update: true, delete: true },
-  clients: { create: true, read: true, update: true, delete: true },
-  dashboard: { create: true, read: true, update: true, delete: true }
-};
-
-const readOnlyPermissions: RolePermissions = {
-  staff: { create: false, read: true, update: false, delete: false },
-  roles: { create: false, read: true, update: false, delete: false },
-  clients: { create: false, read: true, update: false, delete: false },
-  dashboard: { create: false, read: true, update: false, delete: false }
+  clients: { create: true, read: true, update: true, delete: true }
 };
 
 const salesPermissions: RolePermissions = {
-  staff: { create: false, read: true, update: false, delete: false },
+  staff: { create: false, read: false, update: false, delete: false },
   roles: { create: false, read: false, update: false, delete: false },
-  clients: { create: true, read: true, update: true, delete: false },
-  dashboard: { create: false, read: true, update: false, delete: false }
+  clients: { create: true, read: true, update: true, delete: true }
+};
+
+const projectPermissions: RolePermissions = {
+  staff: { create: false, read: false, update: false, delete: false },
+  roles: { create: false, read: false, update: false, delete: false },
+  clients: { create: false, read: true, update: false, delete: false }
+};
+
+const designerPermissions: RolePermissions = {
+  staff: { create: false, read: false, update: false, delete: false },
+  roles: { create: false, read: false, update: false, delete: false },
+  clients: { create: false, read: false, update: false, delete: false }
+};
+
+const developerPermissions: RolePermissions = {
+  staff: { create: false, read: false, update: false, delete: false },
+  roles: { create: false, read: false, update: false, delete: false },
+  clients: { create: false, read: false, update: false, delete: false }
 };
 
 // Mock Roles Data
@@ -107,7 +116,7 @@ export const mockRoles: Role[] = [
   {
     id: "1",
     name: "Management",
-    permissions: fullPermissions,
+    permissions: managementPermissions,
     isDefault: true,
     lastUpdated: "2024-01-01T00:00:00Z",
     createdAt: "2024-01-01T00:00:00Z"
@@ -122,26 +131,21 @@ export const mockRoles: Role[] = [
   {
     id: "3",
     name: "Project",
-    permissions: {
-      staff: { create: false, read: true, update: false, delete: false },
-      roles: { create: false, read: false, update: false, delete: false },
-      clients: { create: false, read: true, update: true, delete: false },
-      dashboard: { create: false, read: true, update: false, delete: false }
-    },
+    permissions: projectPermissions,
     lastUpdated: "2024-01-01T00:00:00Z",
     createdAt: "2024-01-01T00:00:00Z"
   },
   {
     id: "4",
     name: "Designer",
-    permissions: readOnlyPermissions,
+    permissions: designerPermissions,
     lastUpdated: "2024-01-01T00:00:00Z",
     createdAt: "2024-01-01T00:00:00Z"
   },
   {
     id: "5",
     name: "Developer",
-    permissions: readOnlyPermissions,
+    permissions: developerPermissions,
     lastUpdated: "2024-01-01T00:00:00Z",
     createdAt: "2024-01-01T00:00:00Z"
   }

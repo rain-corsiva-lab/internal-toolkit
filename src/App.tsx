@@ -10,6 +10,8 @@ import Dashboard from "./components/admin/Dashboard";
 import StaffManagement from "./pages/admin/StaffManagement";
 import RoleManagement from "./pages/admin/RoleManagement";
 import ClientManagement from "./pages/admin/ClientManagement";
+import Profile from "./pages/admin/Profile";
+import EditStaff from "./pages/admin/EditStaff";
 
 const queryClient = new QueryClient();
 
@@ -24,8 +26,10 @@ const App = () => (
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="staff" element={<StaffManagement />} />
+            <Route path="staff/edit/:id" element={<EditStaff />} />
             <Route path="roles" element={<RoleManagement />} />
             <Route path="clients" element={<ClientManagement />} />
+            <Route path="profile" element={<Profile />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

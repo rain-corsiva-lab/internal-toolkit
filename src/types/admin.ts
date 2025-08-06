@@ -31,7 +31,6 @@ export interface RolePermissions {
   staff: CRUDPermissions;
   roles: CRUDPermissions;
   clients: CRUDPermissions;
-  dashboard: CRUDPermissions;
 }
 
 export interface CRUDPermissions {
