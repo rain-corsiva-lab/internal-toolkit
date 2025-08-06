@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -136,23 +137,23 @@ export default function ClientManagement() {
                   />
                 </div>
                 
-                <Select value={clientFilters.country || ""} onValueChange={(value) => setClientFilters({ ...clientFilters, country: value || undefined })}>
+                <Select value={clientFilters.country || "all"} onValueChange={(value) => setClientFilters({ ...clientFilters, country: value === "all" ? undefined : value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by Country" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Countries</SelectItem>
+                    <SelectItem value="all">All Countries</SelectItem>
                     <SelectItem value="Singapore">Singapore</SelectItem>
                     <SelectItem value="Malaysia">Malaysia</SelectItem>
                   </SelectContent>
                 </Select>
 
-                <Select value={clientFilters.industry || ""} onValueChange={(value) => setClientFilters({ ...clientFilters, industry: value || undefined })}>
+                <Select value={clientFilters.industry || "all"} onValueChange={(value) => setClientFilters({ ...clientFilters, industry: value === "all" ? undefined : value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by Industry" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Industries</SelectItem>
+                    <SelectItem value="all">All Industries</SelectItem>
                     <SelectItem value="Retail">Retail</SelectItem>
                     <SelectItem value="F&B">F&B</SelectItem>
                     <SelectItem value="Professional Services">Professional Services</SelectItem>
@@ -243,24 +244,24 @@ export default function ClientManagement() {
                   />
                 </div>
                 
-                <Select value={pocFilters.salesPIC || ""} onValueChange={(value) => setPOCFilters({ ...pocFilters, salesPIC: value || undefined })}>
+                <Select value={pocFilters.salesPIC || "all"} onValueChange={(value) => setPOCFilters({ ...pocFilters, salesPIC: value === "all" ? undefined : value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by Sales PIC" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Sales PICs</SelectItem>
+                    <SelectItem value="all">All Sales PICs</SelectItem>
                     {salesStaff.map(staff => (
                       <SelectItem key={staff.id} value={staff.id}>{staff.fullName}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                <Select value={pocFilters.projectStatus || ""} onValueChange={(value) => setPOCFilters({ ...pocFilters, projectStatus: value || undefined })}>
+                <Select value={pocFilters.projectStatus || "all"} onValueChange={(value) => setPOCFilters({ ...pocFilters, projectStatus: value === "all" ? undefined : value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Statuses</SelectItem>
+                    <SelectItem value="all">All Statuses</SelectItem>
                     <SelectItem value="Quoted">Quoted</SelectItem>
                     <SelectItem value="Confirmed">Confirmed</SelectItem>
                   </SelectContent>
