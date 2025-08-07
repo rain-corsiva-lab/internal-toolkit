@@ -259,132 +259,159 @@ export default function RoleManagement() {
         </TabsList>
 
         <TabsContent value="roles" className="space-y-6">
-
-      {/* Permission Matrix */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Role Permissions Matrix
-          </CardTitle>
-          <CardDescription>
-            Overview of permissions across all roles and modules
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <PermissionMatrix />
-        </CardContent>
-      </Card>
-
-      {/* Roles List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            System Roles ({roles.length})
-          </CardTitle>
-          <CardDescription>
-            Manage individual roles and their detailed permissions
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Role Name</TableHead>
-                  <TableHead>Staff Management</TableHead>
-                  <TableHead>Role Management</TableHead>
-                  <TableHead>Client Management</TableHead>
-                  <TableHead>Last Updated</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {roles.map((role) => (
-                  <TableRow key={role.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getRoleColor(role.name)}`}>
-                          {role.name}
-                        </span>
-                        {role.isDefault && (
-                          <Badge variant="secondary" className="text-xs">
-                            Default
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-center">
-                        {getPermissionIcon(
-                          role.permissions.staff.create && role.permissions.staff.update && role.permissions.staff.delete,
-                          role.permissions.staff.read && !role.permissions.staff.create
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-center">
-                        {getPermissionIcon(
-                          role.permissions.roles.create && role.permissions.roles.update && role.permissions.roles.delete,
-                          role.permissions.roles.read && !role.permissions.roles.create
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-center">
-                        {getPermissionIcon(
-                          role.permissions.clients.create && role.permissions.clients.update && role.permissions.clients.delete,
-                          role.permissions.clients.read && !role.permissions.clients.create
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{formatDate(role.lastUpdated)}</TableCell>
-                    <TableCell>
-                      <Badge variant="default">Active</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedRole(role)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            toast({
-                              title: "Edit Role",
-                              description: "Role editing functionality would be implemented here",
-                            });
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        {!role.isDefault && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => {
-                              setRoles(roles.filter(r => r.id !== role.id));
-                              toast({
-                                title: "Success",
-                                description: "Role deleted successfully",
-                              });
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+          {/* Roles List */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                System Roles ({roles.length})
+              </CardTitle>
+              <CardDescription>
+                Manage individual roles and their detailed permissions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Role Name</TableHead>
+                      <TableHead>Staff Management</TableHead>
+                      <TableHead>Role Management</TableHead>
+                      <TableHead>Client Management</TableHead>
+                      <TableHead>Assigned Staff</TableHead>
+                      <TableHead>Last Updated</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {roles.map((role) => (
+                      <TableRow key={role.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${getRoleColor(role.name)}`}>
+                              {role.name}
+                            </span>
+                            {role.isDefault && (
+                              <Badge variant="secondary" className="text-xs">
+                                Default
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-center">
+                            {getPermissionIcon(
+                              role.permissions.staff.create && role.permissions.staff.update && role.permissions.staff.delete,
+                              role.permissions.staff.read && !role.permissions.staff.create
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-center">
+                            {getPermissionIcon(
+                              role.permissions.roles.create && role.permissions.roles.update && role.permissions.roles.delete,
+                              role.permissions.roles.read && !role.permissions.roles.create
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-center">
+                            {getPermissionIcon(
+                              role.permissions.clients.create && role.permissions.clients.update && role.permissions.clients.delete,
+                              role.permissions.clients.read && !role.permissions.clients.create
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            {staff.filter(s => s.roleId === role.id).length > 0 ? (
+                              staff.filter(s => s.roleId === role.id).map(member => (
+                                <div key={member.id} className="flex items-center gap-2">
+                                  {editingStaffRole === member.id ? (
+                                    <div className="flex items-center gap-2">
+                                      <Select 
+                                        value={member.roleId || ""} 
+                                        onValueChange={(value) => handleStaffRoleChange(member.id, value)}
+                                      >
+                                        <SelectTrigger className="w-32">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="">No Role</SelectItem>
+                                          {roles.map((r) => (
+                                            <SelectItem key={r.id} value={r.id}>
+                                              {r.name}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setEditingStaffRole(null)}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div 
+                                      className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+                                      onClick={() => setEditingStaffRole(member.id)}
+                                    >
+                                      <span className="text-sm">{member.fullName}</span>
+                                      <Edit className="h-3 w-3 text-muted-foreground" />
+                                    </div>
+                                  )}
+                                </div>
+                              ))
+                            ) : (
+                              <span className="text-sm text-muted-foreground">No staff assigned</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>{formatDate(role.lastUpdated)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedRole(role)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                toast({
+                                  title: "Edit Role",
+                                  description: "Role editing functionality would be implemented here",
+                                });
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            {!role.isDefault && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => {
+                                  setRoles(roles.filter(r => r.id !== role.id));
+                                  toast({
+                                    title: "Success",
+                                    description: "Role deleted successfully",
+                                  });
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
             </Table>
           </div>
         </CardContent>
