@@ -151,6 +151,7 @@ export default function ClientDetail() {
                   <TableHead>Email</TableHead>
                   <TableHead>Designation</TableHead>
                   <TableHead>Sales PIC</TableHead>
+                  <TableHead>Project</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -165,6 +166,20 @@ export default function ClientDetail() {
                       <TableCell>{poc.contactEmail}</TableCell>
                       <TableCell>{poc.designation}</TableCell>
                       <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
+                      <TableCell>
+                        {poc.projectName ? (
+                          <div className="space-y-1">
+                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                              {poc.projectName}
+                            </Badge>
+                            {poc.projectType && (
+                              <div className="text-xs text-muted-foreground">{poc.projectType}</div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">No project</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={getStatusBadge(poc.projectStatus)}>
                           {poc.projectStatus}
