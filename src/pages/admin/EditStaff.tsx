@@ -213,7 +213,15 @@ export default function EditStaff() {
               <Input
                 id="joinedDate"
                 type="date"
-                value={formData.joinedDate ? new Date(formData.joinedDate).toISOString().split('T')[0] : ""}
+                value={formData.joinedDate ? (() => {
+                  // Handle DD/MM/YYYY format from mock data
+                  if (formData.joinedDate.includes('/')) {
+                    const [day, month, year] = formData.joinedDate.split('/');
+                    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                  }
+                  // Handle ISO format
+                  return formData.joinedDate.split('T')[0];
+                })() : ""}
                 onChange={(e) => setFormData({ ...formData, joinedDate: e.target.value })}
                 required
               />
