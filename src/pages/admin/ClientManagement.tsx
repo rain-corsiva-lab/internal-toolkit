@@ -12,6 +12,7 @@ import { mockClients, mockClientPOCs, getSalesStaff, getClientPOCsByClient } fro
 import { Client, ClientPOC, ClientFilters, POCFilters } from "@/types/admin";
 import AddClientForm from "@/components/admin/AddClientForm";
 import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
+import EditClientForm from "@/components/admin/EditClientForm";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -24,8 +25,10 @@ export default function ClientManagement() {
   const [pocFilters, setPOCFilters] = useState<POCFilters>({});
   
   const [selectedPOC, setSelectedPOC] = useState<ClientPOC | null>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddPOCForm, setShowAddPOCForm] = useState(false);
+  const [showEditClientForm, setShowEditClientForm] = useState(false);
 
   const salesStaff = getSalesStaff();
 
@@ -113,6 +116,17 @@ export default function ClientManagement() {
 
   const handleAddClientPOC = (newPOC: ClientPOC) => {
     setClientPOCs([...clientPOCs, newPOC]);
+  };
+
+  const handleEditClient = (updatedClient: Client) => {
+    setClients(clients.map(client => 
+      client.id === updatedClient.id ? updatedClient : client
+    ));
+  };
+
+  const handleEditClientClick = (client: Client) => {
+    setSelectedClient(client);
+    setShowEditClientForm(true);
   };
 
   return (
@@ -230,7 +244,11 @@ export default function ClientManagement() {
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleEditClientClick(client)}
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
                           </div>
@@ -431,6 +449,18 @@ export default function ClientManagement() {
         <AddClientPOCForm 
           onClose={() => setShowAddPOCForm(false)}
           onAdd={handleAddClientPOC}
+        />
+      )}
+
+      {/* Edit Client Form */}
+      {showEditClientForm && selectedClient && (
+        <EditClientForm 
+          client={selectedClient}
+          onClose={() => {
+            setShowEditClientForm(false);
+            setSelectedClient(null);
+          }}
+          onSave={handleEditClient}
         />
       )}
     </div>

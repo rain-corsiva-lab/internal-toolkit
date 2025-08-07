@@ -193,6 +193,7 @@ export default function ClientDetail() {
         <AddClientPOCForm 
           onClose={() => setShowAddPOCForm(false)}
           onAdd={handleAddClientPOC}
+          preselectedClientId={client?.id}
         />
       )}
 
