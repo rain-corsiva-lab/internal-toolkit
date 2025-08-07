@@ -1,21 +1,44 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Shield, Check, X, Eye } from "lucide-react";
-import { mockRoles } from "@/data/mockData";
-import { Role } from "@/types/admin";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Shield, Check, X, Eye, Users, Edit, Trash2 } from "lucide-react";
+import { mockRoles, mockStaff } from "@/data/mockData";
+import { Role, Staff } from "@/types/admin";
 import { useToast } from "@/hooks/use-toast";
 
 export default function RoleManagement() {
   const { toast } = useToast();
   const [roles, setRoles] = useState<Role[]>(mockRoles);
+  const [staff, setStaff] = useState<Staff[]>(mockStaff.filter(s => !s.isDeleted));
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [showCreateRoleForm, setShowCreateRoleForm] = useState(false);
+  const [editingStaffRole, setEditingStaffRole] = useState<string | null>(null);
+  const [newRoleName, setNewRoleName] = useState("");
+  const [newRolePermissions, setNewRolePermissions] = useState({
+    staff: { create: false, read: false, update: false, delete: false },
+    roles: { create: false, read: false, update: false, delete: false },
+    clients: { create: false, read: false, update: false, delete: false }
+  });
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const getRoleColor = (roleName: string) => {
+    const colors: Record<string, string> = {
+      "Management": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+      "Sales": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      "Project": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+      "Designer": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+      "Developer": "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
+    };
+    return colors[roleName] || "bg-muted text-muted-foreground";
   };
 
   const getPermissionIcon = (hasPermission: boolean, readOnly?: boolean) => {
@@ -36,6 +59,64 @@ export default function RoleManagement() {
     if (hasAll) return "full";
     if (hasRead) return "read";
     return "none";
+  };
+
+  const setPermissionLevel = (module: string, level: string) => {
+    setNewRolePermissions(prev => ({
+      ...prev,
+      [module]: {
+        create: level === "full",
+        read: level === "full" || level === "read",
+        update: level === "full",
+        delete: level === "full"
+      }
+    }));
+  };
+
+  const handleCreateRole = () => {
+    if (!newRoleName.trim()) {
+      toast({
+        title: "Error",
+        description: "Role name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newRole: Role = {
+      id: `role_${Date.now()}`,
+      name: newRoleName,
+      permissions: newRolePermissions,
+      lastUpdated: new Date().toISOString(),
+      createdAt: new Date().toISOString()
+    };
+
+    setRoles([...roles, newRole]);
+    setNewRoleName("");
+    setNewRolePermissions({
+      staff: { create: false, read: false, update: false, delete: false },
+      roles: { create: false, read: false, update: false, delete: false },
+      clients: { create: false, read: false, update: false, delete: false }
+    });
+    setShowCreateRoleForm(false);
+    
+    toast({
+      title: "Success",
+      description: "Role created successfully",
+    });
+  };
+
+  const handleStaffRoleChange = (staffId: string, newRoleId: string) => {
+    setStaff(staff.map(s => 
+      s.id === staffId 
+        ? { ...s, roleId: newRoleId, updatedAt: new Date().toISOString() }
+        : s
+    ));
+    setEditingStaffRole(null);
+    toast({
+      title: "Success",
+      description: "Staff role updated successfully",
+    });
   };
 
   const PermissionMatrix = () => {
@@ -97,6 +178,64 @@ export default function RoleManagement() {
     );
   };
 
+  const CreateRoleForm = () => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <CardHeader>
+          <CardTitle>Create New Role</CardTitle>
+          <CardDescription>Define role name and permissions</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="roleName">Role Name *</Label>
+            <Input
+              id="roleName"
+              value={newRoleName}
+              onChange={(e) => setNewRoleName(e.target.value)}
+              placeholder="Enter role name"
+              required
+            />
+          </div>
+          
+          <div className="space-y-4">
+            <h4 className="font-semibold">Permissions</h4>
+            {[
+              { name: "Staff Management", key: "staff" },
+              { name: "Role Management", key: "roles" },
+              { name: "Client Management", key: "clients" }
+            ].map(module => (
+              <div key={module.key} className="space-y-2">
+                <Label>{module.name}</Label>
+                <Select 
+                  value={getPermissionLevel(newRolePermissions[module.key as keyof typeof newRolePermissions])}
+                  onValueChange={(value) => setPermissionLevel(module.key, value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Access</SelectItem>
+                    <SelectItem value="read">View Only</SelectItem>
+                    <SelectItem value="full">Full Access</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowCreateRoleForm(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateRole}>
+              Create Role
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -112,6 +251,14 @@ export default function RoleManagement() {
           Create Role
         </Button>
       </div>
+
+      <Tabs defaultValue="roles" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="roles">Role Permissions</TabsTrigger>
+          <TabsTrigger value="assignments">Staff Role Assignments</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="roles" className="space-y-6">
 
       {/* Permission Matrix */}
       <Card>
@@ -159,7 +306,9 @@ export default function RoleManagement() {
                   <TableRow key={role.id}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
-                        {role.name}
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${getRoleColor(role.name)}`}>
+                          {role.name}
+                        </span>
                         {role.isDefault && (
                           <Badge variant="secondary" className="text-xs">
                             Default
@@ -214,8 +363,23 @@ export default function RoleManagement() {
                             });
                           }}
                         >
-                          Edit
+                          <Edit className="h-4 w-4" />
                         </Button>
+                        {!role.isDefault && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                              setRoles(roles.filter(r => r.id !== role.id));
+                              toast({
+                                title: "Success",
+                                description: "Role deleted successfully",
+                              });
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -225,6 +389,107 @@ export default function RoleManagement() {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="assignments" className="space-y-6">
+          {/* Staff Role Assignments */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Staff Role Assignments ({staff.length})
+              </CardTitle>
+              <CardDescription>
+                Manage role assignments for all staff members
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Staff Name</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Employment Type</TableHead>
+                      <TableHead>Current Role</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {staff.map((member) => (
+                      <TableRow key={member.id}>
+                        <TableCell className="font-medium">{member.fullName}</TableCell>
+                        <TableCell>{member.department}</TableCell>
+                        <TableCell>
+                          <Badge variant={member.employmentType === "Full-Time" ? "default" : "secondary"}>
+                            {member.employmentType}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {editingStaffRole === member.id ? (
+                            <div className="flex items-center gap-2">
+                              <Select 
+                                value={member.roleId || ""} 
+                                onValueChange={(value) => handleStaffRoleChange(member.id, value)}
+                              >
+                                <SelectTrigger className="w-40">
+                                  <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {roles.map((role) => (
+                                    <SelectItem key={role.id} value={role.id}>
+                                      {role.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setEditingStaffRole(null)}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <div 
+                              className="flex items-center gap-2 cursor-pointer"
+                              onClick={() => setEditingStaffRole(member.id)}
+                            >
+                              <span 
+                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                  member.roleId 
+                                    ? getRoleColor(roles.find(r => r.id === member.roleId)?.name || "")
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {member.roleId ? roles.find(r => r.id === member.roleId)?.name : "No Role"}
+                              </span>
+                              <Edit className="h-3 w-3 text-muted-foreground" />
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingStaffRole(member.id)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Create Role Form Modal */}
+      {showCreateRoleForm && <CreateRoleForm />}
 
       {/* Role Details Modal */}
       {selectedRole && (
