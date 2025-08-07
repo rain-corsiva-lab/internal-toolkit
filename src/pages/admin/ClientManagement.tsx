@@ -346,7 +346,7 @@ export default function ClientManagement() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setSelectedPOC(poc)}
+                                onClick={() => navigate(`/admin/clients/${poc.clientId}`)}
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>

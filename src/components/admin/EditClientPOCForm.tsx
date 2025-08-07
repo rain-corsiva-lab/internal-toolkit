@@ -9,30 +9,31 @@ import { ClientPOC } from "@/types/admin";
 import { useToast } from "@/hooks/use-toast";
 import { getSalesStaff, mockClients } from "@/data/mockData";
 
-interface AddClientPOCFormProps {
+interface EditClientPOCFormProps {
+  poc: ClientPOC;
   onClose: () => void;
-  onAdd: (poc: ClientPOC) => void;
+  onSave: (poc: ClientPOC) => void;
 }
 
-export default function AddClientPOCForm({ onClose, onAdd }: AddClientPOCFormProps) {
+export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPOCFormProps) {
   const { toast } = useToast();
   const salesStaff = getSalesStaff();
+  const client = mockClients.find(c => c.id === poc.clientId);
   
   const [formData, setFormData] = useState({
-    contactName: "",
-    contactNumber: "",
-    contactEmail: "",
-    designation: "",
-    salesPIC: "",
-    projectStatus: "Quoted" as "Quoted" | "Confirmed",
-    clientId: ""
+    contactName: poc.contactName,
+    contactNumber: poc.contactNumber,
+    contactEmail: poc.contactEmail,
+    designation: poc.designation,
+    salesPIC: poc.salesPIC,
+    projectStatus: poc.projectStatus
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.contactName || !formData.contactNumber || !formData.contactEmail || 
-        !formData.designation || !formData.salesPIC || !formData.clientId) {
+        !formData.designation || !formData.salesPIC) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -41,23 +42,21 @@ export default function AddClientPOCForm({ onClose, onAdd }: AddClientPOCFormPro
       return;
     }
 
-    const newPOC: ClientPOC = {
-      id: `poc_${Date.now()}`,
-      clientId: formData.clientId,
+    const updatedPOC: ClientPOC = {
+      ...poc,
       contactName: formData.contactName,
       contactNumber: formData.contactNumber,
       contactEmail: formData.contactEmail,
       designation: formData.designation,
       salesPIC: formData.salesPIC,
       projectStatus: formData.projectStatus,
-      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-    onAdd(newPOC);
+    onSave(updatedPOC);
     toast({
       title: "Success",
-      description: "Client POC added successfully"
+      description: "Client POC updated successfully"
     });
     onClose();
   };
@@ -68,8 +67,8 @@ export default function AddClientPOCForm({ onClose, onAdd }: AddClientPOCFormPro
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Add Client POC</CardTitle>
-              <CardDescription>Enter client point of contact information</CardDescription>
+              <CardTitle>Edit Client POC</CardTitle>
+              <CardDescription>Update client point of contact information</CardDescription>
             </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -80,22 +79,13 @@ export default function AddClientPOCForm({ onClose, onAdd }: AddClientPOCFormPro
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="company">Company *</Label>
-              <Select 
-                value={formData.clientId} 
-                onValueChange={(value) => setFormData({ ...formData, clientId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select company" />
-                </SelectTrigger>
-                <SelectContent>
-                  {mockClients.map((client) => (
-                    <SelectItem key={client.id} value={client.id}>
-                      {client.companyName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="company">Company</Label>
+              <Input
+                id="company"
+                value={client?.companyName || "Unknown Company"}
+                disabled
+                className="bg-muted"
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -185,7 +175,7 @@ export default function AddClientPOCForm({ onClose, onAdd }: AddClientPOCFormPro
                 Cancel
               </Button>
               <Button type="submit">
-                Add Client POC
+                Save Changes
               </Button>
             </div>
           </form>

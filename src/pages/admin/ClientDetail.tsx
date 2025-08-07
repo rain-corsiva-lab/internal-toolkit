@@ -7,15 +7,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowLeft, Edit, Plus } from "lucide-react";
 import { mockClients, getClientPOCsByClient, getSalesStaff } from "@/data/mockData";
 import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
-import { ClientPOC } from "@/types/admin";
+import EditClientForm from "@/components/admin/EditClientForm";
+import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
+import { ClientPOC, Client } from "@/types/admin";
 
 export default function ClientDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [showAddPOCForm, setShowAddPOCForm] = useState(false);
+  const [showEditClientForm, setShowEditClientForm] = useState(false);
+  const [showEditPOCForm, setShowEditPOCForm] = useState(false);
+  const [selectedPOC, setSelectedPOC] = useState<ClientPOC | null>(null);
+  const [client, setClient] = useState(mockClients.find(c => c.id === id) || null);
   const [clientPOCs, setClientPOCs] = useState(getClientPOCsByClient(id || ""));
-  
-  const client = mockClients.find(c => c.id === id);
   const salesStaff = getSalesStaff();
 
   if (!client) {
@@ -37,6 +41,19 @@ export default function ClientDetail() {
 
   const handleAddClientPOC = (newPOC: ClientPOC) => {
     setClientPOCs([...clientPOCs, newPOC]);
+  };
+
+  const handleEditClient = (updatedClient: Client) => {
+    setClient(updatedClient);
+  };
+
+  const handleEditClientPOC = (updatedPOC: ClientPOC) => {
+    setClientPOCs(clientPOCs.map(poc => poc.id === updatedPOC.id ? updatedPOC : poc));
+  };
+
+  const handleEditPOC = (poc: ClientPOC) => {
+    setSelectedPOC(poc);
+    setShowEditPOCForm(true);
   };
 
   return (
@@ -62,7 +79,7 @@ export default function ClientDetail() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Company Information</CardTitle>
-            <Button>
+            <Button onClick={() => setShowEditClientForm(true)}>
               <Edit className="h-4 w-4 mr-2" />
               Edit Company
             </Button>
@@ -103,7 +120,10 @@ export default function ClientDetail() {
           <div className="space-y-3">
             {client.addresses.map(address => (
               <div key={address.id} className="p-3 bg-muted rounded-lg">
-                <p className="text-sm">{address.address}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-sm">{address.address}</p>
+                  <Badge variant="outline">{address.type}</Badge>
+                </div>
               </div>
             ))}
           </div>
@@ -151,7 +171,11 @@ export default function ClientDetail() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleEditPOC(poc)}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                       </TableCell>
@@ -169,6 +193,27 @@ export default function ClientDetail() {
         <AddClientPOCForm 
           onClose={() => setShowAddPOCForm(false)}
           onAdd={handleAddClientPOC}
+        />
+      )}
+
+      {/* Edit Client Form */}
+      {showEditClientForm && client && (
+        <EditClientForm 
+          client={client}
+          onClose={() => setShowEditClientForm(false)}
+          onSave={handleEditClient}
+        />
+      )}
+
+      {/* Edit Client POC Form */}
+      {showEditPOCForm && selectedPOC && (
+        <EditClientPOCForm 
+          poc={selectedPOC}
+          onClose={() => {
+            setShowEditPOCForm(false);
+            setSelectedPOC(null);
+          }}
+          onSave={handleEditClientPOC}
         />
       )}
     </div>
