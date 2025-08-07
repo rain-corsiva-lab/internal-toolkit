@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { X, Check, ChevronsUpDown } from "lucide-react";
 import { ClientPOC } from "@/types/admin";
 import { useToast } from "@/hooks/use-toast";
 import { getSalesStaff, mockClients } from "@/data/mockData";
+import { cn } from "@/lib/utils";
 
 interface AddClientPOCFormProps {
   onClose: () => void;
@@ -17,6 +20,7 @@ interface AddClientPOCFormProps {
 export default function AddClientPOCForm({ onClose, onAdd }: AddClientPOCFormProps) {
   const { toast } = useToast();
   const salesStaff = getSalesStaff();
+  const [open, setOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     contactName: "",
@@ -81,21 +85,49 @@ export default function AddClientPOCForm({ onClose, onAdd }: AddClientPOCFormPro
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="company">Company *</Label>
-              <Select 
-                value={formData.clientId} 
-                onValueChange={(value) => setFormData({ ...formData, clientId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select company" />
-                </SelectTrigger>
-                <SelectContent>
-                  {mockClients.map((client) => (
-                    <SelectItem key={client.id} value={client.id}>
-                      {client.companyName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                  >
+                    {formData.clientId
+                      ? mockClients.find((client) => client.id === formData.clientId)?.companyName
+                      : "Select company..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search company..." />
+                    <CommandList>
+                      <CommandEmpty>No company found.</CommandEmpty>
+                      <CommandGroup>
+                        {mockClients.map((client) => (
+                          <CommandItem
+                            key={client.id}
+                            value={client.companyName}
+                            onSelect={() => {
+                              setFormData({ ...formData, clientId: client.id });
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.clientId === client.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {client.companyName}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
