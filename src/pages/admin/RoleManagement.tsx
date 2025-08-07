@@ -291,11 +291,6 @@ export default function RoleManagement() {
                             <span className={`px-2 py-1 rounded text-xs font-medium ${getRoleColor(role.name)}`}>
                               {role.name}
                             </span>
-                            {role.isDefault && (
-                              <Badge variant="secondary" className="text-xs">
-                                Default
-                              </Badge>
-                            )}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -344,21 +339,19 @@ export default function RoleManagement() {
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            {!role.isDefault && (
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => {
-                                  setRoles(roles.filter(r => r.id !== role.id));
-                                  toast({
-                                    title: "Success",
-                                    description: "Role deleted successfully",
-                                  });
-                                }}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                setRoles(roles.filter(r => r.id !== role.id));
+                                toast({
+                                  title: "Success",
+                                  description: "Role deleted successfully",
+                                });
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
