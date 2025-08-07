@@ -279,7 +279,6 @@ export default function RoleManagement() {
                       <TableHead>Staff Management</TableHead>
                       <TableHead>Role Management</TableHead>
                       <TableHead>Client Management</TableHead>
-                      <TableHead>Assigned Staff</TableHead>
                       <TableHead>Last Updated</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -320,53 +319,6 @@ export default function RoleManagement() {
                             {getPermissionIcon(
                               role.permissions.clients.create && role.permissions.clients.update && role.permissions.clients.delete,
                               role.permissions.clients.read && !role.permissions.clients.create
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            {staff.filter(s => s.roleId === role.id).length > 0 ? (
-                              staff.filter(s => s.roleId === role.id).map(member => (
-                                <div key={member.id} className="flex items-center gap-2">
-                                  {editingStaffRole === member.id ? (
-                                    <div className="flex items-center gap-2">
-                                      <Select 
-                                        value={member.roleId || ""} 
-                                        onValueChange={(value) => handleStaffRoleChange(member.id, value)}
-                                      >
-                                        <SelectTrigger className="w-32">
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="">No Role</SelectItem>
-                                          {roles.map((r) => (
-                                            <SelectItem key={r.id} value={r.id}>
-                                              {r.name}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setEditingStaffRole(null)}
-                                      >
-                                        Cancel
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                    <div 
-                                      className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
-                                      onClick={() => setEditingStaffRole(member.id)}
-                                    >
-                                      <span className="text-sm">{member.fullName}</span>
-                                      <Edit className="h-3 w-3 text-muted-foreground" />
-                                    </div>
-                                  )}
-                                </div>
-                              ))
-                            ) : (
-                              <span className="text-sm text-muted-foreground">No staff assigned</span>
                             )}
                           </div>
                         </TableCell>
@@ -438,7 +390,7 @@ export default function RoleManagement() {
                       <TableHead>Staff Name</TableHead>
                       <TableHead>Department</TableHead>
                       <TableHead>Employment Type</TableHead>
-                      <TableHead>Current Role</TableHead>
+                      <TableHead>Assigned Role</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
