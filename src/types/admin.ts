@@ -10,7 +10,8 @@ export interface Staff {
   department: "Management Team" | "Project Team" | "Sales Team" | "Design Team" | "Development Team" | "Maintenance Team";
   employmentType: "Full-Time" | "Part-Time" | "Contract" | "Intern";
   designation: string;
-  approverEmail?: string;
+  otApproverEmail?: string;
+  leaveApproverEmail?: string;
   lastLoginDate?: string;
   isDeleted?: boolean;
   createdAt: string;

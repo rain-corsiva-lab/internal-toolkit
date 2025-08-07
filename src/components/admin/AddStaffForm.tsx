@@ -11,10 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 
 interface AddStaffFormProps {
   onClose: () => void;
-  onAdd: (staff: Staff) => void;
+  onSubmit: (staff: Staff) => void;
 }
 
-export default function AddStaffForm({ onClose, onAdd }: AddStaffFormProps) {
+export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -25,7 +25,8 @@ export default function AddStaffForm({ onClose, onAdd }: AddStaffFormProps) {
     department: "",
     employmentType: "",
     designation: "",
-    approverEmail: "",
+    otApproverEmail: "",
+    leaveApproverEmail: "",
     roleId: ""
   });
 
@@ -52,14 +53,15 @@ export default function AddStaffForm({ onClose, onAdd }: AddStaffFormProps) {
       department: formData.department as Staff["department"],
       employmentType: formData.employmentType as Staff["employmentType"],
       designation: formData.designation,
-      approverEmail: formData.approverEmail || undefined,
+      otApproverEmail: formData.otApproverEmail || undefined,
+      leaveApproverEmail: formData.leaveApproverEmail || undefined,
       isDeleted: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       roleId: formData.roleId
     };
 
-    onAdd(newStaff);
+    onSubmit(newStaff);
     toast({
       title: "Success",
       description: "Staff member added successfully",
@@ -192,13 +194,24 @@ export default function AddStaffForm({ onClose, onAdd }: AddStaffFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="approverEmail">OT Approver Email</Label>
+                <Label htmlFor="otApproverEmail">OT Approver Email</Label>
                 <Input
-                  id="approverEmail"
+                  id="otApproverEmail"
                   type="email"
-                  value={formData.approverEmail}
-                  onChange={(e) => setFormData({ ...formData, approverEmail: e.target.value })}
-                  placeholder="Enter approver email"
+                  value={formData.otApproverEmail}
+                  onChange={(e) => setFormData({ ...formData, otApproverEmail: e.target.value })}
+                  placeholder="Enter OT approver email"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="leaveApproverEmail">Leave Approver Email</Label>
+                <Input
+                  id="leaveApproverEmail"
+                  type="email"
+                  value={formData.leaveApproverEmail}
+                  onChange={(e) => setFormData({ ...formData, leaveApproverEmail: e.target.value })}
+                  placeholder="Enter leave approver email"
                 />
               </div>
             </div>

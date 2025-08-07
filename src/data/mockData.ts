@@ -58,7 +58,7 @@ export const mockStaff: Staff[] = [
     department: "Design Team",
     employmentType: "Full-Time",
     designation: "UI/UX Designer",
-    approverEmail: "john.smith@company.com",
+    otApproverEmail: "john.smith@company.com",
     lastLoginDate: "2024-01-04 16:45:00",
     createdAt: "2023-09-05T00:00:00Z",
     updatedAt: "2024-01-04T16:45:00Z"

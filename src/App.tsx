@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminLayout from "./components/admin/AdminLayout";
-import Dashboard from "./components/admin/Dashboard";
 import StaffManagement from "./pages/admin/StaffManagement";
 import RoleManagement from "./pages/admin/RoleManagement";
 import ClientManagement from "./pages/admin/ClientManagement";
@@ -26,6 +25,7 @@ const App = () => (
           <Route index element={<StaffManagement />} />
           <Route path="staff" element={<StaffManagement />} />
           <Route path="staff/edit/:id" element={<EditStaff />} />
+          <Route path="roles" element={<RoleManagement />} />
           <Route path="clients" element={<ClientManagement />} />
           <Route path="profile" element={<Profile />} />
         </Route>

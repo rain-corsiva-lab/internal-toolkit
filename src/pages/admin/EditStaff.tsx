@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { mockStaff } from "@/data/mockData";
 import type { Staff } from "@/types/admin";
@@ -17,7 +17,7 @@ export default function EditStaff() {
   
   const staff = mockStaff.find(s => s.id === id);
   
-  const [formData, setFormData] = useState<Omit<Staff, 'id' | 'joinedDate' | 'createdAt' | 'updatedAt'>>({
+  const [formData, setFormData] = useState<Omit<Staff, 'id' | 'createdAt' | 'updatedAt'>>({
     fullName: staff?.fullName || "",
     phoneNumber: staff?.phoneNumber || "",
     address: staff?.address || "",
@@ -26,7 +26,9 @@ export default function EditStaff() {
     department: staff?.department || "Management Team",
     employmentType: staff?.employmentType || "Full-Time",
     designation: staff?.designation || "",
-    approverEmail: staff?.approverEmail || "",
+    joinedDate: staff?.joinedDate || "",
+    otApproverEmail: staff?.otApproverEmail || "",
+    leaveApproverEmail: staff?.leaveApproverEmail || "",
     lastLoginDate: staff?.lastLoginDate || "",
     isDeleted: staff?.isDeleted || false,
   });
@@ -54,6 +56,16 @@ export default function EditStaff() {
   };
 
   const handleCancel = () => {
+    navigate("/admin/staff");
+  };
+
+  const handleDelete = () => {
+    // In real app, this would call an API to delete the staff member
+    toast({
+      title: "Staff Deleted",
+      description: `${formData.fullName} has been successfully deleted.`,
+      variant: "destructive",
+    });
     navigate("/admin/staff");
   };
 
@@ -197,35 +209,52 @@ export default function EditStaff() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="approverEmail">Approver Email</Label>
+              <Label htmlFor="joinedDate">Joined Date *</Label>
               <Input
-                id="approverEmail"
-                type="email"
-                value={formData.approverEmail}
-                onChange={(e) => setFormData({ ...formData, approverEmail: e.target.value })}
-                placeholder="Enter approver email (optional)"
+                id="joinedDate"
+                type="date"
+                value={formData.joinedDate ? new Date(formData.joinedDate).toISOString().split('T')[0] : ""}
+                onChange={(e) => setFormData({ ...formData, joinedDate: e.target.value })}
+                required
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="joinedDate">Joined Date</Label>
-              <Input 
-                id="joinedDate" 
-                value={new Date(staff.joinedDate).toLocaleDateString()} 
-                disabled 
-                className="bg-muted text-muted-foreground"
+              <Label htmlFor="otApproverEmail">OT Approver Email</Label>
+              <Input
+                id="otApproverEmail"
+                type="email"
+                value={formData.otApproverEmail}
+                onChange={(e) => setFormData({ ...formData, otApproverEmail: e.target.value })}
+                placeholder="Enter OT approver email (optional)"
               />
-              <p className="text-sm text-muted-foreground">Joined date cannot be modified</p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="leaveApproverEmail">Leave Approver Email</Label>
+              <Input
+                id="leaveApproverEmail"
+                type="email"
+                value={formData.leaveApproverEmail}
+                onChange={(e) => setFormData({ ...formData, leaveApproverEmail: e.target.value })}
+                placeholder="Enter leave approver email (optional)"
+              />
             </div>
           </div>
           
-          <div className="flex justify-end gap-4 pt-6">
-            <Button variant="outline" onClick={handleCancel}>
-              Cancel
+          <div className="flex justify-between items-center pt-6">
+            <Button variant="destructive" onClick={handleDelete}>
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Staff
             </Button>
-            <Button onClick={handleSave}>
-              Save Changes
-            </Button>
+            <div className="flex gap-4">
+              <Button variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave}>
+                Save Changes
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

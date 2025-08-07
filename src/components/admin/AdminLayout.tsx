@@ -15,7 +15,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { name: "Staff & Role Management", href: "/admin/staff", icon: Users },
+  { name: "Staff Management", href: "/admin/staff", icon: Users },
+  { name: "Role Management", href: "/admin/roles", icon: Shield },
   { name: "Client Management", href: "/admin/clients", icon: Building2 },
 ];
 
