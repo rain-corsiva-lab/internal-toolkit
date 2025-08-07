@@ -11,17 +11,21 @@ import { Plus, Search, Download, Edit, Eye, Building2, Users } from "lucide-reac
 import { mockClients, mockClientPOCs, getSalesStaff, getClientPOCsByClient } from "@/data/mockData";
 import { Client, ClientPOC, ClientFilters, POCFilters } from "@/types/admin";
 import AddClientForm from "@/components/admin/AddClientForm";
+import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function ClientManagement() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>(mockClients);
   const [clientPOCs, setClientPOCs] = useState<ClientPOC[]>(mockClientPOCs);
   const [clientFilters, setClientFilters] = useState<ClientFilters>({});
   const [pocFilters, setPOCFilters] = useState<POCFilters>({});
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  
   const [selectedPOC, setSelectedPOC] = useState<ClientPOC | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddPOCForm, setShowAddPOCForm] = useState(false);
 
   const salesStaff = getSalesStaff();
 
@@ -105,6 +109,10 @@ export default function ClientManagement() {
 
   const handleAddClient = (newClient: Client) => {
     setClients([...clients, newClient]);
+  };
+
+  const handleAddClientPOC = (newPOC: ClientPOC) => {
+    setClientPOCs([...clientPOCs, newPOC]);
   };
 
   return (
@@ -218,7 +226,7 @@ export default function ClientManagement() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setSelectedClient(client)}
+                              onClick={() => navigate(`/admin/clients/${client.id}`)}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -288,13 +296,21 @@ export default function ClientManagement() {
           {/* POCs List */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Client Points of Contact ({filteredPOCs.length})
-              </CardTitle>
-              <CardDescription>
-                Manage client points of contact across all companies
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Client Points of Contact ({filteredPOCs.length})
+                  </CardTitle>
+                  <CardDescription>
+                    Manage client points of contact across all companies
+                  </CardDescription>
+                </div>
+                <Button onClick={() => setShowAddPOCForm(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Client POC
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -302,11 +318,10 @@ export default function ClientManagement() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Contact Name</TableHead>
-                      <TableHead>Contact Number</TableHead>
+                      <TableHead>Phone Number</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Designation</TableHead>
                       <TableHead>Sales PIC</TableHead>
-                      <TableHead>Project Name/Type</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -316,19 +331,11 @@ export default function ClientManagement() {
                       const salesPerson = salesStaff.find(staff => staff.id === poc.salesPIC);
                       return (
                         <TableRow key={poc.id}>
-                          <TableCell className="font-medium">{poc.contactName}</TableCell>
-                          <TableCell>{poc.contactNumber}</TableCell>
-                          <TableCell>{poc.contactEmail}</TableCell>
-                          <TableCell>{poc.designation}</TableCell>
-                          <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
-                          <TableCell>
-                            <div className="space-y-1">
-                              <div className="font-medium text-sm">{poc.projectName || "N/A"}</div>
-                              <Badge variant="secondary" className="text-xs">
-                                {poc.projectType || "N/A"}
-                              </Badge>
-                            </div>
-                          </TableCell>
+                           <TableCell className="font-medium">{poc.contactName}</TableCell>
+                           <TableCell>{poc.contactNumber}</TableCell>
+                           <TableCell>{poc.contactEmail}</TableCell>
+                           <TableCell>{poc.designation}</TableCell>
+                           <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
                           <TableCell>
                             <Badge variant={getStatusBadge(poc.projectStatus)}>
                               {poc.projectStatus}
@@ -359,95 +366,6 @@ export default function ClientManagement() {
         </TabsContent>
       </Tabs>
 
-      {/* Client Detail Modal */}
-      {selectedClient && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <CardHeader>
-              <CardTitle>Company Details - {selectedClient.companyName}</CardTitle>
-              <CardDescription>Complete company information and client POCs</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium">Company Name (As per ACRA)</label>
-                  <p className="text-sm text-muted-foreground">{selectedClient.companyName}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Registration Number</label>
-                  <p className="text-sm text-muted-foreground">{selectedClient.registrationNumber}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Country</label>
-                  <p className="text-sm text-muted-foreground">{selectedClient.country}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Industry</label>
-                  <p className="text-sm text-muted-foreground">{selectedClient.industry}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Number of Projects</label>
-                  <p className="text-sm text-muted-foreground">{selectedClient.numberOfProjects}</p>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Company Addresses</label>
-                <div className="mt-2 space-y-2">
-                  {selectedClient.addresses.map(address => (
-                    <div key={address.id} className="p-3 bg-muted rounded-lg">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant={address.isMain ? "default" : "secondary"}>
-                          {address.type}
-                        </Badge>
-                        {address.isMain && <Badge variant="outline">Main</Badge>}
-                      </div>
-                      <p className="text-sm">{address.address}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">Client POCs</label>
-                <div className="mt-2">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Designation</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {getClientPOCsByClient(selectedClient.id).map(poc => (
-                        <TableRow key={poc.id}>
-                          <TableCell>{poc.contactName}</TableCell>
-                          <TableCell>{poc.contactEmail}</TableCell>
-                          <TableCell>{poc.designation}</TableCell>
-                          <TableCell>
-                            <Badge variant={getStatusBadge(poc.projectStatus)}>
-                              {poc.projectStatus}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setSelectedClient(null)}>
-                  Close
-                </Button>
-                <Button>Edit Company</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {/* POC Detail Modal */}
       {selectedPOC && (
@@ -505,6 +423,14 @@ export default function ClientManagement() {
         <AddClientForm 
           onClose={() => setShowAddForm(false)}
           onAdd={handleAddClient}
+        />
+      )}
+
+      {/* Add Client POC Form */}
+      {showAddPOCForm && (
+        <AddClientPOCForm 
+          onClose={() => setShowAddPOCForm(false)}
+          onAdd={handleAddClientPOC}
         />
       )}
     </div>

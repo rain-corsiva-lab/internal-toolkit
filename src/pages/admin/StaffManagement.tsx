@@ -265,6 +265,14 @@ export default function StaffManagement() {
                   <span className="font-medium">Address:</span>
                   <p>{selectedStaff.address}</p>
                 </div>
+                <div>
+                  <span className="font-medium">OT Approver Email:</span>
+                  <p>{selectedStaff.otApproverEmail || "N/A"}</p>
+                </div>
+                <div>
+                  <span className="font-medium">Leave Approver Email:</span>
+                  <p>{selectedStaff.leaveApproverEmail || "N/A"}</p>
+                </div>
               </div>
               <div className="flex justify-end">
                 <Button onClick={() => setSelectedStaff(null)}>Close</Button>

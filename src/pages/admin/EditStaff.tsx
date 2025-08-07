@@ -239,13 +239,14 @@ export default function EditStaff() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="leaveApproverEmail">Leave Approver Email</Label>
+              <Label htmlFor="leaveApproverEmail">Leave Approver Email *</Label>
               <Input
                 id="leaveApproverEmail"
                 type="email"
                 value={formData.leaveApproverEmail}
                 onChange={(e) => setFormData({ ...formData, leaveApproverEmail: e.target.value })}
-                placeholder="Enter leave approver email (optional)"
+                placeholder="Enter leave approver email"
+                required
               />
             </div>
           </div>

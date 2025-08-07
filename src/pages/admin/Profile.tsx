@@ -19,8 +19,8 @@ const currentUser = {
   department: "Management Team",
   employmentType: "Full-Time",
   designation: "CEO",
-  approverEmail: "board@company.com",
-  lastLoginDate: "2024-01-08",
+  leaveApproverEmail: "board@company.com",
+  otApproverEmail: "hr@company.com",
   createdAt: "2023-01-15T09:00:00Z",
   updatedAt: "2024-01-08T14:30:00Z"
 };
@@ -166,20 +166,20 @@ export default function Profile() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="approverEmail">Approver Email</Label>
+              <Label htmlFor="leaveApproverEmail">Leave Approver Email</Label>
               <Input 
-                id="approverEmail" 
-                value={currentUser.approverEmail || "N/A"} 
+                id="leaveApproverEmail" 
+                value={currentUser.leaveApproverEmail || "N/A"} 
                 disabled 
                 className="bg-muted text-muted-foreground"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="lastLogin">Last Login</Label>
+              <Label htmlFor="otApproverEmail">OT Approver Email</Label>
               <Input 
-                id="lastLogin" 
-                value={currentUser.lastLoginDate ? new Date(currentUser.lastLoginDate).toLocaleString() : "N/A"} 
+                id="otApproverEmail" 
+                value={currentUser.otApproverEmail || "N/A"} 
                 disabled 
                 className="bg-muted text-muted-foreground"
               />

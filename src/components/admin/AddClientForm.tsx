@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { X } from "lucide-react";
+import { X, Plus, Trash2 } from "lucide-react";
 import { Client } from "@/types/admin";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,7 +19,7 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
   const [formData, setFormData] = useState({
     companyName: "",
     registrationNumber: "",
-    address: "",
+    addresses: [{ address: "", type: "Main" as "Main" | "Billing" }],
     country: "",
     industry: "",
     customIndustry: ""
@@ -42,10 +42,33 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
     "Others"
   ];
 
+  const addAddress = () => {
+    setFormData({
+      ...formData,
+      addresses: [...formData.addresses, { address: "", type: "Billing" }]
+    });
+  };
+
+  const removeAddress = (index: number) => {
+    if (formData.addresses.length > 1) {
+      setFormData({
+        ...formData,
+        addresses: formData.addresses.filter((_, i) => i !== index)
+      });
+    }
+  };
+
+  const updateAddress = (index: number, address: string) => {
+    const newAddresses = [...formData.addresses];
+    newAddresses[index].address = address;
+    setFormData({ ...formData, addresses: newAddresses });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.companyName || !formData.registrationNumber || !formData.address || !formData.country || !formData.industry) {
+    const hasEmptyAddress = formData.addresses.some(addr => !addr.address.trim());
+    if (!formData.companyName || !formData.registrationNumber || hasEmptyAddress || !formData.country || !formData.industry) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -67,14 +90,12 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
       id: `client_${Date.now()}`,
       companyName: formData.companyName,
       registrationNumber: formData.registrationNumber,
-      addresses: [
-        {
-          id: `addr_${Date.now()}`,
-          type: "Main",
-          address: formData.address,
-          isMain: true
-        }
-      ],
+      addresses: formData.addresses.map((addr, index) => ({
+        id: `addr_${Date.now()}_${index}`,
+        type: addr.type,
+        address: addr.address,
+        isMain: index === 0
+      })),
       country: formData.country as "Singapore" | "Malaysia",
       industry: (formData.industry === "Others" ? formData.customIndustry : formData.industry) as any,
       customIndustry: formData.industry === "Others" ? formData.customIndustry : undefined,
@@ -133,15 +154,41 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="address">Company Address *</Label>
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="Enter complete company address"
-                rows={3}
-                required
-              />
+              <div className="flex items-center justify-between mb-2">
+                <Label>Company Addresses *</Label>
+                <Button type="button" variant="outline" size="sm" onClick={addAddress}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Address
+                </Button>
+              </div>
+              <div className="space-y-3">
+                {formData.addresses.map((address, index) => (
+                  <div key={index} className="flex gap-2">
+                    <div className="flex-1">
+                      <Textarea
+                        value={address.address}
+                        onChange={(e) => updateAddress(index, e.target.value)}
+                        placeholder={`Enter ${address.type.toLowerCase()} address`}
+                        rows={2}
+                        required
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs text-muted-foreground">{address.type}</span>
+                      {formData.addresses.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeAddress(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -9,6 +9,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import StaffManagement from "./pages/admin/StaffManagement";
 import RoleManagement from "./pages/admin/RoleManagement";
 import ClientManagement from "./pages/admin/ClientManagement";
+import ClientDetail from "./pages/admin/ClientDetail";
 import Profile from "./pages/admin/Profile";
 import EditStaff from "./pages/admin/EditStaff";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="staff/edit/:id" element={<EditStaff />} />
           <Route path="roles" element={<RoleManagement />} />
           <Route path="clients" element={<ClientManagement />} />
+          <Route path="clients/:id" element={<ClientDetail />} />
           <Route path="profile" element={<Profile />} />
         </Route>
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
