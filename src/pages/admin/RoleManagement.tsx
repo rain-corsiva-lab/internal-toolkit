@@ -18,9 +18,17 @@ export default function RoleManagement() {
   const [staff, setStaff] = useState<Staff[]>(mockStaff.filter(s => !s.isDeleted));
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [showCreateRoleForm, setShowCreateRoleForm] = useState(false);
+  const [showEditRoleForm, setShowEditRoleForm] = useState(false);
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [editingStaffRole, setEditingStaffRole] = useState<string | null>(null);
   const [newRoleName, setNewRoleName] = useState("");
   const [newRolePermissions, setNewRolePermissions] = useState({
+    staff: { create: false, read: false, update: false, delete: false },
+    roles: { create: false, read: false, update: false, delete: false },
+    clients: { create: false, read: false, update: false, delete: false }
+  });
+  const [editRoleName, setEditRoleName] = useState("");
+  const [editRolePermissions, setEditRolePermissions] = useState({
     staff: { create: false, read: false, update: false, delete: false },
     roles: { create: false, read: false, update: false, delete: false },
     clients: { create: false, read: false, update: false, delete: false }
@@ -71,6 +79,58 @@ export default function RoleManagement() {
         delete: level === "full"
       }
     }));
+  };
+
+  const setEditPermissionLevel = (module: string, level: string) => {
+    setEditRolePermissions(prev => ({
+      ...prev,
+      [module]: {
+        create: level === "full",
+        read: level === "full" || level === "read",
+        update: level === "full",
+        delete: level === "full"
+      }
+    }));
+  };
+
+  const handleEditRole = (role: Role) => {
+    setEditingRole(role);
+    setEditRoleName(role.name);
+    setEditRolePermissions(role.permissions);
+    setShowEditRoleForm(true);
+  };
+
+  const handleUpdateRole = () => {
+    if (!editRoleName.trim() || !editingRole) {
+      toast({
+        title: "Error",
+        description: "Role name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const updatedRole: Role = {
+      ...editingRole,
+      name: editRoleName,
+      permissions: editRolePermissions,
+      lastUpdated: new Date().toISOString()
+    };
+
+    setRoles(roles.map(r => r.id === editingRole.id ? updatedRole : r));
+    setEditRoleName("");
+    setEditRolePermissions({
+      staff: { create: false, read: false, update: false, delete: false },
+      roles: { create: false, read: false, update: false, delete: false },
+      clients: { create: false, read: false, update: false, delete: false }
+    });
+    setEditingRole(null);
+    setShowEditRoleForm(false);
+    
+    toast({
+      title: "Success",
+      description: "Role updated successfully",
+    });
   };
 
   const handleCreateRole = () => {
@@ -236,6 +296,73 @@ export default function RoleManagement() {
     </div>
   );
 
+  const EditRoleForm = () => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <CardHeader>
+          <CardTitle>Edit Role</CardTitle>
+          <CardDescription>Update role name and permissions</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="editRoleName">Role Name *</Label>
+            <Input
+              id="editRoleName"
+              value={editRoleName}
+              onChange={(e) => setEditRoleName(e.target.value)}
+              placeholder="Enter role name"
+              required
+            />
+          </div>
+          
+          <div className="space-y-4">
+            <h4 className="font-semibold">Permissions</h4>
+            {[
+              { name: "Staff Management", key: "staff" },
+              { name: "Role Management", key: "roles" },
+              { name: "Client Management", key: "clients" }
+            ].map(module => (
+              <div key={module.key} className="space-y-2">
+                <Label>{module.name}</Label>
+                <Select 
+                  value={getPermissionLevel(editRolePermissions[module.key as keyof typeof editRolePermissions])}
+                  onValueChange={(value) => setEditPermissionLevel(module.key, value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Access</SelectItem>
+                    <SelectItem value="read">View Only</SelectItem>
+                    <SelectItem value="full">Full Access</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => {
+              setShowEditRoleForm(false);
+              setEditingRole(null);
+              setEditRoleName("");
+              setEditRolePermissions({
+                staff: { create: false, read: false, update: false, delete: false },
+                roles: { create: false, read: false, update: false, delete: false },
+                clients: { create: false, read: false, update: false, delete: false }
+              });
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateRole}>
+              Update Role
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -330,12 +457,7 @@ export default function RoleManagement() {
                             <Button 
                               variant="ghost" 
                               size="sm"
-                              onClick={() => {
-                                toast({
-                                  title: "Edit Role",
-                                  description: "Role editing functionality would be implemented here",
-                                });
-                              }}
+                              onClick={() => handleEditRole(role)}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -462,6 +584,9 @@ export default function RoleManagement() {
 
       {/* Create Role Form Modal */}
       {showCreateRoleForm && <CreateRoleForm />}
+
+      {/* Edit Role Form Modal */}
+      {showEditRoleForm && <EditRoleForm />}
 
       {/* Role Details Modal */}
       {selectedRole && (
