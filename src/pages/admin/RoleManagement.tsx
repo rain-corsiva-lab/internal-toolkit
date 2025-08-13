@@ -419,122 +419,139 @@ export default function RoleManagement() {
 
       <Tabs defaultValue="roles" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="roles">Role Permissions</TabsTrigger>
+          <TabsTrigger value="roles">System Role Permission</TabsTrigger>
           <TabsTrigger value="assignments">Staff Role Assignments</TabsTrigger>
         </TabsList>
 
         <TabsContent value="roles" className="space-y-6">
-          {/* Roles List */}
+          {/* System Role Permission with Detailed Functions */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
-                System Roles ({roles.length})
+                System Role Permission ({roles.length})
               </CardTitle>
               <CardDescription>
-                Manage individual roles and their detailed permissions
+                Manage roles and their detailed function permissions
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Staff Management</TableHead>
-                      <TableHead>Role Management</TableHead>
-                      <TableHead>Client Management</TableHead>
-                      <TableHead>Role Name</TableHead>
-                      <TableHead>Last Updated</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {roles.map((role) => (
-                      <TableRow key={role.id}>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {getPermissionIcon(
-                              role.permissions.staff.create && role.permissions.staff.update && role.permissions.staff.delete,
-                              role.permissions.staff.read && !role.permissions.staff.create
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {getPermissionIcon(
-                              role.permissions.roles.create && role.permissions.roles.update && role.permissions.roles.delete,
-                              role.permissions.roles.read && !role.permissions.roles.create
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {getPermissionIcon(
-                              role.permissions.clients.create && role.permissions.clients.update && role.permissions.clients.delete,
-                              role.permissions.clients.read && !role.permissions.clients.create
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${getRoleColor(role.name)}`}>
-                              {role.name}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell>{formatDate(role.lastUpdated)}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSelectedRole(role)}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleEditRole(role)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => {
-                                setRoles(roles.filter(r => r.id !== role.id));
-                                toast({
-                                  title: "Success",
-                                  description: "Role deleted successfully",
-                                });
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+              <div className="space-y-6">
+                {/* Role Names Header */}
+                <div className="grid grid-cols-6 gap-4 items-center">
+                  <div className="font-semibold text-lg">Functions</div>
+                  {roles.map(role => (
+                    <div key={role.id} className="text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <span className={`px-3 py-2 rounded-lg text-sm font-medium ${getRoleColor(role.name)}`}>
+                          {role.name}
+                        </span>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditRole(role)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedRole(role)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Eye className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setRoles(roles.filter(r => r.id !== role.id));
+                              toast({
+                                title: "Success",
+                                description: "Role deleted successfully",
+                              });
+                            }}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-          {/* Permission Matrix */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Role Permissions Matrix
-              </CardTitle>
-              <CardDescription>
-                Detailed function permissions for each role
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <PermissionMatrix />
+                {/* Permission Categories */}
+                {[
+                  {
+                    name: "Staff Management",
+                    key: "staff",
+                    subFunctions: [
+                      { name: "Add Employee", permission: "create" },
+                      { name: "View Employee", permission: "read" },
+                      { name: "Edit Employee", permission: "update" },
+                      { name: "Delete Employee", permission: "delete" }
+                    ]
+                  },
+                  {
+                    name: "Role Management", 
+                    key: "roles",
+                    subFunctions: [
+                      { name: "Create Role", permission: "create" },
+                      { name: "View Role", permission: "read" },
+                      { name: "Edit Role", permission: "update" },
+                      { name: "Delete Role", permission: "delete" }
+                    ]
+                  },
+                  {
+                    name: "Client Management",
+                    key: "clients", 
+                    subFunctions: [
+                      { name: "Add Client", permission: "create" },
+                      { name: "View Client", permission: "read" },
+                      { name: "Edit Client", permission: "update" },
+                      { name: "Delete Client", permission: "delete" }
+                    ]
+                  }
+                ].map(category => (
+                  <Card key={category.key}>
+                    <CardHeader>
+                      <CardTitle className="text-lg">{category.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {category.subFunctions.map(subFunc => (
+                          <div key={subFunc.name} className="grid grid-cols-6 gap-4 items-center py-2 border-b last:border-b-0">
+                            <div className="font-medium text-sm">{subFunc.name}</div>
+                            {roles.map(role => {
+                              const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
+                              const hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                              
+                              return (
+                                <div key={role.id} className="flex justify-center">
+                                  {hasPermission ? (
+                                    <Badge variant="default" className="text-xs">
+                                      <Check className="h-3 w-3 mr-1" />
+                                      Full Access
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="outline" className="text-xs">
+                                      <X className="h-3 w-3 mr-1" />
+                                      No Access
+                                    </Badge>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
