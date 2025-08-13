@@ -107,7 +107,7 @@ export default function ClientManagement() {
   };
 
   const getStatusBadge = (status: string) => {
-    return status === "Confirmed" ? "default" : "secondary";
+    return status === "Active" ? "default" : "secondary";
   };
 
   const handleAddClient = (newClient: Client) => {
@@ -158,7 +158,7 @@ export default function ClientManagement() {
               <CardTitle>Search & Filter Companies</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -190,6 +190,18 @@ export default function ClientManagement() {
                     <SelectItem value="F&B">F&B</SelectItem>
                     <SelectItem value="Professional Services">Professional Services</SelectItem>
                     <SelectItem value="Manufacturing, Engineering and Technology">Manufacturing, Engineering and Technology</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value="" onValueChange={() => {}}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by Projects" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">0 Projects</SelectItem>
+                    <SelectItem value="1-5">1-5 Projects</SelectItem>
+                    <SelectItem value="6-10">6-10 Projects</SelectItem>
+                    <SelectItem value="10+">10+ Projects</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -298,8 +310,8 @@ export default function ClientManagement() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="Quoted">Quoted</SelectItem>
-                    <SelectItem value="Confirmed">Confirmed</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -339,35 +351,33 @@ export default function ClientManagement() {
                       <TableHead>Phone Number</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Designation</TableHead>
+                      <TableHead>Company</TableHead>
                       <TableHead>Sales PIC</TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredPOCs.map((poc) => {
                       const salesPerson = salesStaff.find(staff => staff.id === poc.salesPIC);
+                      const client = clients.find(client => client.id === poc.clientId);
                       return (
                         <TableRow key={poc.id}>
                            <TableCell className="font-medium">{poc.contactName}</TableCell>
                            <TableCell>{poc.contactNumber}</TableCell>
                            <TableCell>{poc.contactEmail}</TableCell>
                            <TableCell>{poc.designation}</TableCell>
+                           <TableCell>
+                             <Button
+                               variant="link"
+                               className="p-0 h-auto font-normal text-blue-600 hover:text-blue-800"
+                               onClick={() => navigate(`/admin/clients/${poc.clientId}`)}
+                             >
+                               {client?.companyName || "Unknown"}
+                             </Button>
+                           </TableCell>
                            <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
                           <TableCell>
-                            <Badge variant={getStatusBadge(poc.projectStatus)}>
-                              {poc.projectStatus}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
                             <div className="flex items-center gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => navigate(`/admin/clients/${poc.clientId}`)}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
                               <Button variant="ghost" size="sm">
                                 <Edit className="h-4 w-4" />
                               </Button>

@@ -19,7 +19,7 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
   const [formData, setFormData] = useState({
     companyName: "",
     registrationNumber: "",
-    addresses: [{ address: "", type: "Main" as "Main" | "Billing" }],
+    addresses: [{ address: "", type: "Main" as "Main" | "Other" }],
     country: "",
     industry: "",
     customIndustry: ""
@@ -45,7 +45,7 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
   const addAddress = () => {
     setFormData({
       ...formData,
-      addresses: [...formData.addresses, { address: "", type: "Billing" }]
+      addresses: [...formData.addresses, { address: "", type: "Other" }]
     });
   };
 
@@ -68,7 +68,7 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
     e.preventDefault();
     
     const hasEmptyAddress = formData.addresses.some(addr => !addr.address.trim());
-    if (!formData.companyName || !formData.registrationNumber || hasEmptyAddress || !formData.country || !formData.industry) {
+    if (!formData.companyName || hasEmptyAddress || !formData.country || !formData.industry) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -142,13 +142,12 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
               </div>
               
               <div>
-                <Label htmlFor="registrationNumber">Registration Number *</Label>
+                <Label htmlFor="registrationNumber">Registration Number</Label>
                 <Input
                   id="registrationNumber"
                   value={formData.registrationNumber}
                   onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
                   placeholder="Enter registration number"
-                  required
                 />
               </div>
             </div>
@@ -158,7 +157,7 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
                 <Label>Company Addresses *</Label>
                 <Button type="button" variant="outline" size="sm" onClick={addAddress}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Address
+                  Add Other Address
                 </Button>
               </div>
               <div className="space-y-3">
@@ -168,14 +167,16 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
                       <Textarea
                         value={address.address}
                         onChange={(e) => updateAddress(index, e.target.value)}
-                        placeholder={`Enter ${address.type.toLowerCase()} address`}
+                        placeholder={index === 0 ? "Enter main company address" : "Enter other address"}
                         rows={2}
                         required
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-muted-foreground">{address.type}</span>
-                      {formData.addresses.length > 1 && (
+                      <span className="text-xs text-muted-foreground">
+                        {index === 0 ? "Main Address" : "Other Address"}
+                      </span>
+                      {formData.addresses.length > 1 && index > 0 && (
                         <Button
                           type="button"
                           variant="outline"

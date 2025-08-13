@@ -154,17 +154,17 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
               </div>
               
               <div>
-                <Label htmlFor="projectStatus">Project Status</Label>
+                <Label htmlFor="pocStatus">POC Status</Label>
                 <Select 
                   value={formData.projectStatus} 
-                  onValueChange={(value) => setFormData({ ...formData, projectStatus: value as "Quoted" | "Confirmed" })}
+                  onValueChange={(value) => setFormData({ ...formData, projectStatus: value as "Active" | "Inactive" })}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Quoted">Quoted</SelectItem>
-                    <SelectItem value="Confirmed">Confirmed</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

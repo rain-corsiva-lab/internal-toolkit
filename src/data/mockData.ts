@@ -159,7 +159,7 @@ export const mockClients: Client[] = [
     registrationNumber: "202301234A",
     addresses: [
       { id: "1", type: "Main", address: "1 Raffles Place, Singapore 048616", isMain: true },
-      { id: "2", type: "Billing", address: "2 Marina Boulevard, Singapore 018987", isMain: false }
+      { id: "2", type: "Other", address: "2 Marina Boulevard, Singapore 018987", isMain: false }
     ],
     country: "Singapore",
     industry: "Professional Services",
@@ -205,7 +205,7 @@ export const mockClientPOCs: ClientPOC[] = [
     contactEmail: "michael.tan@techinnovations.com",
     designation: "CTO",
     salesPIC: "2", // Sarah Johnson
-    projectStatus: "Confirmed",
+    projectStatus: "Active",
     projectName: "Enterprise CRM System",
     projectType: "Software Development",
     createdAt: "2023-01-15T00:00:00Z",
@@ -219,7 +219,7 @@ export const mockClientPOCs: ClientPOC[] = [
     contactEmail: "jennifer.lee@techinnovations.com",
     designation: "Project Manager",
     salesPIC: "2", // Sarah Johnson
-    projectStatus: "Confirmed",
+    projectStatus: "Active",
     projectName: "Mobile App Development",
     projectType: "Mobile Application",
     createdAt: "2023-01-15T00:00:00Z",
@@ -233,7 +233,7 @@ export const mockClientPOCs: ClientPOC[] = [
     contactEmail: "wei.ming@foodparadise.com.my",
     designation: "Operations Manager",
     salesPIC: "2", // Sarah Johnson
-    projectStatus: "Quoted",
+    projectStatus: "Inactive",
     projectName: "Inventory Management Portal",
     projectType: "Web Application",
     createdAt: "2023-03-20T00:00:00Z",
@@ -247,7 +247,7 @@ export const mockClientPOCs: ClientPOC[] = [
     contactEmail: "david.wong@sgretail.com",
     designation: "IT Director",
     salesPIC: "2", // Sarah Johnson
-    projectStatus: "Confirmed",
+    projectStatus: "Active",
     projectName: "E-commerce Platform",
     projectType: "Web Development",
     createdAt: "2023-05-10T00:00:00Z",

@@ -402,10 +402,10 @@ export default function RoleManagement() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Role Name</TableHead>
                       <TableHead>Staff Management</TableHead>
                       <TableHead>Role Management</TableHead>
                       <TableHead>Client Management</TableHead>
+                      <TableHead>Role Name</TableHead>
                       <TableHead>Last Updated</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -413,13 +413,6 @@ export default function RoleManagement() {
                   <TableBody>
                     {roles.map((role) => (
                       <TableRow key={role.id}>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${getRoleColor(role.name)}`}>
-                              {role.name}
-                            </span>
-                          </div>
-                        </TableCell>
                         <TableCell>
                           <div className="flex justify-center">
                             {getPermissionIcon(
@@ -442,6 +435,13 @@ export default function RoleManagement() {
                               role.permissions.clients.create && role.permissions.clients.update && role.permissions.clients.delete,
                               role.permissions.clients.read && !role.permissions.clients.create
                             )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${getRoleColor(role.name)}`}>
+                              {role.name}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>{formatDate(role.lastUpdated)}</TableCell>

@@ -29,7 +29,7 @@ export default function AddClientPOCForm({ onClose, onAdd, preselectedClientId }
     contactEmail: "",
     designation: "",
     salesPIC: "",
-    projectStatus: "Quoted" as "Quoted" | "Confirmed",
+    projectStatus: "Active" as "Active" | "Inactive",
     clientId: preselectedClientId || ""
   });
 
@@ -37,7 +37,7 @@ export default function AddClientPOCForm({ onClose, onAdd, preselectedClientId }
     e.preventDefault();
     
     if (!formData.contactName || !formData.contactNumber || !formData.contactEmail || 
-        !formData.designation || !formData.salesPIC || !formData.clientId) {
+        !formData.salesPIC || !formData.clientId) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -175,16 +175,6 @@ export default function AddClientPOCForm({ onClose, onAdd, preselectedClientId }
                 />
               </div>
               
-              <div>
-                <Label htmlFor="designation">Contact Designation *</Label>
-                <Input
-                  id="designation"
-                  value={formData.designation}
-                  onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
-                  placeholder="Enter designation"
-                  required
-                />
-              </div>
               
               <div>
                 <Label htmlFor="salesPIC">Sales PIC *</Label>
@@ -206,17 +196,17 @@ export default function AddClientPOCForm({ onClose, onAdd, preselectedClientId }
               </div>
               
               <div>
-                <Label htmlFor="projectStatus">Project Status</Label>
+                <Label htmlFor="pocStatus">POC Status</Label>
                 <Select 
                   value={formData.projectStatus} 
-                  onValueChange={(value) => setFormData({ ...formData, projectStatus: value as "Quoted" | "Confirmed" })}
+                  onValueChange={(value) => setFormData({ ...formData, projectStatus: value as "Active" | "Inactive" })}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Quoted">Quoted</SelectItem>
-                    <SelectItem value="Confirmed">Confirmed</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

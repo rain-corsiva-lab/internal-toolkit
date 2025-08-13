@@ -65,7 +65,7 @@ export interface Client {
 
 export interface ClientAddress {
   id: string;
-  type: "Main" | "Billing";
+  type: "Main" | "Other";
   address: string;
   isMain: boolean;
 }
@@ -78,7 +78,7 @@ export interface ClientPOC {
   contactEmail: string;
   designation: string;
   salesPIC: string; // Staff ID from Sales Team
-  projectStatus: "Quoted" | "Confirmed";
+  projectStatus: "Active" | "Inactive";
   projectName?: string;
   projectType?: string;
   createdAt: string;

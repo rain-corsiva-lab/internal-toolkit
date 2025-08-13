@@ -49,7 +49,7 @@ export default function EditClientForm({ client, onClose, onSave }: EditClientFo
       addresses: [...formData.addresses, { 
         id: `addr_${Date.now()}`,
         address: "", 
-        type: "Billing",
+        type: "Other",
         isMain: false
       }]
     });
@@ -70,7 +70,7 @@ export default function EditClientForm({ client, onClose, onSave }: EditClientFo
     setFormData({ ...formData, addresses: newAddresses });
   };
 
-  const updateAddressType = (index: number, type: "Main" | "Billing") => {
+  const updateAddressType = (index: number, type: "Main" | "Other") => {
     const newAddresses = [...formData.addresses];
     newAddresses[index].type = type;
     newAddresses[index].isMain = type === "Main";
@@ -183,14 +183,14 @@ export default function EditClientForm({ client, onClose, onSave }: EditClientFo
                       <div className="flex flex-col gap-1">
                         <Select 
                           value={address.type} 
-                          onValueChange={(value) => updateAddressType(index, value as "Main" | "Billing")}
+                          onValueChange={(value) => updateAddressType(index, value as "Main" | "Other")}
                         >
                           <SelectTrigger className="w-20">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Main">Main</SelectItem>
-                            <SelectItem value="Billing">Billing</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                         {formData.addresses.length > 1 && (
