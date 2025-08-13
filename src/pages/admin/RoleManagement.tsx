@@ -180,60 +180,98 @@ export default function RoleManagement() {
   };
 
   const PermissionMatrix = () => {
-    const modules = [
-      { name: "Staff Management", key: "staff" },
-      { name: "Role Management", key: "roles" },
-      { name: "Client Management", key: "clients" }
+    const permissionCategories = [
+      {
+        name: "Staff Management",
+        key: "staff",
+        subFunctions: [
+          { name: "Add Employee", permission: "create" },
+          { name: "View Employee", permission: "read" },
+          { name: "Edit Employee", permission: "update" },
+          { name: "Delete Employee", permission: "delete" }
+        ]
+      },
+      {
+        name: "Role Management", 
+        key: "roles",
+        subFunctions: [
+          { name: "Create Role", permission: "create" },
+          { name: "View Role", permission: "read" },
+          { name: "Edit Role", permission: "update" },
+          { name: "Delete Role", permission: "delete" }
+        ]
+      },
+      {
+        name: "Client Management",
+        key: "clients", 
+        subFunctions: [
+          { name: "Add Client", permission: "create" },
+          { name: "View Client", permission: "read" },
+          { name: "Edit Client", permission: "update" },
+          { name: "Delete Client", permission: "delete" }
+        ]
+      }
     ];
 
+    const getPermissionBadge = (hasPermission: boolean) => {
+      if (hasPermission) {
+        return (
+          <Badge variant="default" className="text-xs">
+            <Check className="h-3 w-3 mr-1" />
+            Full Access
+          </Badge>
+        );
+      } else {
+        return (
+          <Badge variant="outline" className="text-xs">
+            <X className="h-3 w-3 mr-1" />
+            No Access
+          </Badge>
+        );
+      }
+    };
+
     return (
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="text-left p-3 border-b font-semibold">Module</th>
-              {roles.map(role => (
-                <th key={role.id} className="text-center p-3 border-b min-w-32 font-semibold">
-                  {role.name}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {modules.map(module => (
-              <tr key={module.key} className="hover:bg-muted/50">
-                <td className="p-3 border-b font-medium">{module.name}</td>
-                {roles.map(role => {
-                  const modulePerms = role.permissions[module.key as keyof typeof role.permissions];
-                  const level = getPermissionLevel(modulePerms);
-                  
-                  return (
-                    <td key={role.id} className="text-center p-3 border-b">
-                      <div className="flex justify-center">
-                        {level === "full" ? (
-                          <Badge variant="default" className="text-xs">
-                            <Check className="h-3 w-3 mr-1" />
-                            Full Access
-                          </Badge>
-                        ) : level === "read" ? (
-                          <Badge variant="secondary" className="text-xs">
-                            <Eye className="h-3 w-3 mr-1" />
-                            View Only
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-xs">
-                            <X className="h-3 w-3 mr-1" />
-                            No Access
-                          </Badge>
-                        )}
-                      </div>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="space-y-6">
+        {/* Role Names Header */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="font-semibold text-lg">Functions</div>
+          {roles.map(role => (
+            <div key={role.id} className="text-center">
+              <span className={`px-3 py-2 rounded-lg text-sm font-medium ${getRoleColor(role.name)}`}>
+                {role.name}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Permission Categories */}
+        {permissionCategories.map(category => (
+          <Card key={category.key}>
+            <CardHeader>
+              <CardTitle className="text-lg">{category.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {category.subFunctions.map(subFunc => (
+                  <div key={subFunc.name} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center py-2 border-b last:border-b-0">
+                    <div className="font-medium text-sm">{subFunc.name}</div>
+                    {roles.map(role => {
+                      const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
+                      const hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                      
+                      return (
+                        <div key={role.id} className="flex justify-center">
+                          {getPermissionBadge(hasPermission)}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   };
@@ -483,6 +521,22 @@ export default function RoleManagement() {
           </div>
         </CardContent>
       </Card>
+
+          {/* Permission Matrix */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Role Permissions Matrix
+              </CardTitle>
+              <CardDescription>
+                Detailed function permissions for each role
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PermissionMatrix />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="assignments" className="space-y-6">
