@@ -118,6 +118,18 @@ export default function ClientManagement() {
     setClientPOCs([...clientPOCs, newPOC]);
   };
 
+  const handleTogglePOCStatus = (pocId: string) => {
+    setClientPOCs(clientPOCs.map(poc => 
+      poc.id === pocId 
+        ? { ...poc, projectStatus: poc.projectStatus === "Active" ? "Inactive" : "Active", updatedAt: new Date().toISOString() }
+        : poc
+    ));
+    toast({
+      title: "Success",
+      description: "POC status updated successfully",
+    });
+  };
+
   const handleEditClient = (updatedClient: Client) => {
     setClients(clients.map(client => 
       client.id === updatedClient.id ? updatedClient : client
@@ -281,7 +293,7 @@ export default function ClientManagement() {
               <CardTitle>Search & Filter Client POCs</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -304,16 +316,6 @@ export default function ClientManagement() {
                   </SelectContent>
                 </Select>
 
-                <Select value={pocFilters.projectStatus || "all"} onValueChange={(value) => setPOCFilters({ ...pocFilters, projectStatus: value === "all" ? undefined : value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Filter by Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
 
                 <Button variant="outline" onClick={handleExportPOCsCSV} className="w-full">
                   <Download className="h-4 w-4 mr-2" />
@@ -336,10 +338,6 @@ export default function ClientManagement() {
                     Manage client points of contact across all companies
                   </CardDescription>
                 </div>
-                <Button onClick={() => setShowAddPOCForm(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Client POC
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -350,9 +348,9 @@ export default function ClientManagement() {
                       <TableHead>Contact Name</TableHead>
                       <TableHead>Phone Number</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Designation</TableHead>
                       <TableHead>Company</TableHead>
                       <TableHead>Sales PIC</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -365,7 +363,6 @@ export default function ClientManagement() {
                            <TableCell className="font-medium">{poc.contactName}</TableCell>
                            <TableCell>{poc.contactNumber}</TableCell>
                            <TableCell>{poc.contactEmail}</TableCell>
-                           <TableCell>{poc.designation}</TableCell>
                            <TableCell>
                              <Button
                                variant="link"
@@ -376,6 +373,20 @@ export default function ClientManagement() {
                              </Button>
                            </TableCell>
                            <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
+                           <TableCell>
+                             <Button
+                               variant="ghost"
+                               size="sm"
+                               onClick={() => handleTogglePOCStatus(poc.id)}
+                               className={`${poc.projectStatus === "Active" 
+                                 ? "text-green-600 hover:text-green-800 hover:bg-green-50" 
+                                 : "text-red-600 hover:text-red-800 hover:bg-red-50"}`}
+                             >
+                               <Badge variant={poc.projectStatus === "Active" ? "default" : "secondary"}>
+                                 {poc.projectStatus}
+                               </Badge>
+                             </Button>
+                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Button variant="ghost" size="sm">

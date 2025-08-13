@@ -195,21 +195,6 @@ export default function AddClientPOCForm({ onClose, onAdd, preselectedClientId }
                 </Select>
               </div>
               
-              <div>
-                <Label htmlFor="pocStatus">POC Status</Label>
-                <Select 
-                  value={formData.projectStatus} 
-                  onValueChange={(value) => setFormData({ ...formData, projectStatus: value as "Active" | "Inactive" })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
