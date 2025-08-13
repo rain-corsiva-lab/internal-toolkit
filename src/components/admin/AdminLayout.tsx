@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   Users, 
   Shield, 
@@ -9,21 +10,66 @@ import {
   X,
   LayoutDashboard,
   User,
-  LogOut
+  LogOut,
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  Eye,
+  Edit,
+  Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { name: "Staff Management", href: "/admin/staff", icon: Users },
-  { name: "Role Management", href: "/admin/roles", icon: Shield },
-  { name: "Client Management", href: "/admin/clients", icon: Building2 },
+  { 
+    name: "Staff Management", 
+    href: "/admin/staff", 
+    icon: Users,
+    subItems: [
+      { name: "Create Staff", href: "/admin/staff/create", icon: Plus, permission: "create" },
+      { name: "View Staff", href: "/admin/staff", icon: Eye, permission: "read" },
+      { name: "Edit Staff", href: "/admin/staff/edit", icon: Edit, permission: "update" },
+      { name: "Delete Staff", href: "/admin/staff/delete", icon: Trash2, permission: "delete" },
+    ]
+  },
+  { 
+    name: "Role Management", 
+    href: "/admin/roles", 
+    icon: Shield,
+    subItems: [
+      { name: "Create Role", href: "/admin/roles/create", icon: Plus, permission: "create" },
+      { name: "View Roles", href: "/admin/roles", icon: Eye, permission: "read" },
+      { name: "Edit Role", href: "/admin/roles/edit", icon: Edit, permission: "update" },
+      { name: "Delete Role", href: "/admin/roles/delete", icon: Trash2, permission: "delete" },
+    ]
+  },
+  { 
+    name: "Client Management", 
+    href: "/admin/clients", 
+    icon: Building2,
+    subItems: [
+      { name: "Create Client", href: "/admin/clients/create", icon: Plus, permission: "create" },
+      { name: "View Clients", href: "/admin/clients", icon: Eye, permission: "read" },
+      { name: "Edit Client", href: "/admin/clients/edit", icon: Edit, permission: "update" },
+      { name: "Delete Client", href: "/admin/clients/delete", icon: Trash2, permission: "delete" },
+    ]
+  },
 ];
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const toggleExpanded = (itemName: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemName) 
+        ? prev.filter(name => name !== itemName)
+        : [...prev, itemName]
+    );
+  };
 
   const handleLogout = () => {
     // In real app, this would call logout API and clear auth state
@@ -62,26 +108,58 @@ export default function AdminLayout() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-2 p-4">
+          <nav className="flex-1 space-y-1 p-4">
             {navigation.map((item) => {
-              const isActive = location.pathname === item.href || 
+              const isExpanded = expandedItems.includes(item.name);
+              const isMainActive = location.pathname === item.href || 
                 (item.href !== "/admin" && location.pathname.startsWith(item.href));
               
               return (
-                <NavLink
-                  key={item.name}
-                  to={item.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
-                    isActive
-                      ? "bg-primary text-primary-foreground shadow-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                  onClick={() => setSidebarOpen(false)}
+                <Collapsible 
+                  key={item.name} 
+                  open={isExpanded}
+                  onOpenChange={() => toggleExpanded(item.name)}
                 >
-                  <item.icon className="h-4 w-4" />
-                  {item.name}
-                </NavLink>
+                  <CollapsibleTrigger className="w-full">
+                    <div className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-muted hover:text-foreground",
+                      isMainActive && !isExpanded
+                        ? "bg-primary text-primary-foreground shadow-primary"
+                        : "text-muted-foreground"
+                    )}>
+                      <item.icon className="h-4 w-4" />
+                      <span className="flex-1 text-left">{item.name}</span>
+                      {isExpanded ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </div>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-1 pl-6 mt-1">
+                    {item.subItems?.map((subItem) => {
+                      const isSubActive = location.pathname === subItem.href;
+                      
+                      return (
+                        <NavLink
+                          key={subItem.name}
+                          to={subItem.href}
+                          className={cn(
+                            "flex items-center gap-3 rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200",
+                            isSubActive
+                              ? "bg-primary text-primary-foreground shadow-sm"
+                              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                          )}
+                          onClick={() => setSidebarOpen(false)}
+                        >
+                          <subItem.icon className="h-3 w-3" />
+                          {subItem.name}
+                        </NavLink>
+                      );
+                    })}
+                  </CollapsibleContent>
+                </Collapsible>
               );
             })}
           </nav>
