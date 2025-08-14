@@ -77,18 +77,18 @@ export default function EditClientForm({ client, onClose, onSave }: EditClientFo
     setFormData({ ...formData, addresses: newAddresses });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const hasEmptyAddress = formData.addresses.some(addr => !addr.address.trim());
-    if (!formData.companyName || !formData.registrationNumber || hasEmptyAddress || !formData.country || !formData.industry) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
-      return;
-    }
+   const handleSubmit = (e: React.FormEvent) => {
+     e.preventDefault();
+     
+     const hasEmptyAddress = formData.addresses.some(addr => !addr.address.trim());
+     if (!formData.companyName || hasEmptyAddress || !formData.country || !formData.industry) {
+       toast({
+         title: "Error",
+         description: "Please fill in all required fields",
+         variant: "destructive"
+       });
+       return;
+     }
 
     if (formData.industry === "Others" && !formData.customIndustry) {
       toast({
@@ -147,16 +147,15 @@ export default function EditClientForm({ client, onClose, onSave }: EditClientFo
                 />
               </div>
               
-              <div>
-                <Label htmlFor="registrationNumber">Registration Number *</Label>
-                <Input
-                  id="registrationNumber"
-                  value={formData.registrationNumber}
-                  onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
-                  placeholder="Enter registration number"
-                  required
-                />
-              </div>
+               <div>
+                 <Label htmlFor="registrationNumber">Registration Number</Label>
+                 <Input
+                   id="registrationNumber"
+                   value={formData.registrationNumber}
+                   onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                   placeholder="Enter registration number"
+                 />
+               </div>
             </div>
 
             <div>
@@ -167,47 +166,33 @@ export default function EditClientForm({ client, onClose, onSave }: EditClientFo
                   Add Address
                 </Button>
               </div>
-              <div className="space-y-3">
-                {formData.addresses.map((address, index) => (
-                  <div key={address.id} className="space-y-2">
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <Textarea
-                          value={address.address}
-                          onChange={(e) => updateAddress(index, e.target.value)}
-                          placeholder={`Enter ${address.type.toLowerCase()} address`}
-                          rows={2}
-                          required
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <Select 
-                          value={address.type} 
-                          onValueChange={(value) => updateAddressType(index, value as "Main" | "Other")}
-                        >
-                          <SelectTrigger className="w-20">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Main">Main</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {formData.addresses.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => removeAddress(index)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+               <div className="space-y-3">
+                 {formData.addresses.map((address, index) => (
+                   <div key={address.id} className="space-y-2">
+                     <div className="flex gap-2">
+                       <div className="flex-1">
+                         <Textarea
+                           value={address.address}
+                           onChange={(e) => updateAddress(index, e.target.value)}
+                           placeholder="Enter address"
+                           rows={2}
+                           required
+                         />
+                       </div>
+                       {formData.addresses.length > 1 && (
+                         <Button
+                           type="button"
+                           variant="outline"
+                           size="sm"
+                           onClick={() => removeAddress(index)}
+                         >
+                           <Trash2 className="h-4 w-4" />
+                         </Button>
+                       )}
+                     </div>
+                   </div>
+                 ))}
+               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

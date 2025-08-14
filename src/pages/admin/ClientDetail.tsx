@@ -160,18 +160,17 @@ export default function ClientDetail() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Contact Name</TableHead>
-                  <TableHead>Phone Number</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Sales PIC</TableHead>
-                  <TableHead>Project</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+             <Table>
+               <TableHeader>
+                 <TableRow>
+                   <TableHead>Contact Name</TableHead>
+                   <TableHead>Phone Number</TableHead>
+                   <TableHead>Email</TableHead>
+                   <TableHead>Sales PIC</TableHead>
+                   <TableHead>Project</TableHead>
+                   <TableHead>Actions</TableHead>
+                 </TableRow>
+               </TableHeader>
               <TableBody>
                 {clientPOCs.map((poc) => {
                   const salesPerson = salesStaff.find(staff => staff.id === poc.salesPIC);
@@ -194,13 +193,8 @@ export default function ClientDetail() {
                         ) : (
                           <span className="text-muted-foreground text-sm">No project</span>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getStatusBadge(poc.projectStatus)}>
-                          {poc.projectStatus}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
+                       </TableCell>
+                       <TableCell>
                         <Button 
                           variant="ghost" 
                           size="sm"

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, Plus, Minus } from "lucide-react";
 import { ClientPOC } from "@/types/admin";
-import { getSalesStaff } from "@/data/mockData";
+import { getSalesStaff, mockClients } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 
 interface ContactSet {
@@ -38,9 +38,10 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
       company: "Default Company", // You might want to get this from the client data
       status: poc.projectStatus
     }
-  ]);
+   ]);
 
-  const salesStaff = getSalesStaff();
+   const salesStaff = getSalesStaff();
+   const clients = mockClients;
 
   const addContactSet = () => {
     const newSet: ContactSet = {
@@ -205,14 +206,24 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label>Company</Label>
-                      <Input
-                        value={contactSet.company}
-                        onChange={(e) => updateContactSet(contactSet.id, "company", e.target.value)}
-                        placeholder="Enter company"
-                      />
-                    </div>
+                     <div className="space-y-2">
+                       <Label>Company</Label>
+                       <Select 
+                         value={contactSet.company} 
+                         onValueChange={(value) => updateContactSet(contactSet.id, "company", value)}
+                       >
+                         <SelectTrigger>
+                           <SelectValue placeholder="Select company" />
+                         </SelectTrigger>
+                         <SelectContent>
+                           {clients.map(client => (
+                             <SelectItem key={client.id} value={client.companyName}>
+                               {client.companyName}
+                             </SelectItem>
+                           ))}
+                         </SelectContent>
+                       </Select>
+                     </div>
 
                     <div className="space-y-2">
                       <Label>POC Status</Label>

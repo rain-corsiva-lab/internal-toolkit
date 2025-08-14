@@ -226,13 +226,7 @@ export default function RoleManagement() {
         { name: "Add Client", permission: "create" },
         { name: "View Client", permission: "read" },
         { name: "Edit Client", permission: "update" },
-        { name: "No Access", permission: "delete" }
-      ]
-    },
-    {
-      name: "Export Functions",
-      key: "exportContacts",
-      subFunctions: [
+        { name: "No Access", permission: "delete" },
         { name: "Export Contacts", permission: "exportContacts" }
       ]
     }
@@ -367,7 +361,7 @@ export default function RoleManagement() {
                     <span className="text-sm">{subFunc.name}</span>
                     <Select 
                       value={(() => {
-                        if (category.key === "exportContacts") {
+                        if (subFunc.permission === "exportContacts") {
                           return newRolePermissions.exportContacts ? "full" : "none";
                         } else {
                           const categoryPerms = newRolePermissions[category.key as keyof typeof newRolePermissions];
@@ -375,7 +369,7 @@ export default function RoleManagement() {
                         }
                       })()}
                       onValueChange={(value) => {
-                        if (category.key === "exportContacts") {
+                        if (subFunc.permission === "exportContacts") {
                           setNewRolePermissions(prev => ({
                             ...prev,
                             exportContacts: value === "full"
@@ -530,13 +524,30 @@ export default function RoleManagement() {
                         <span className={`px-3 py-2 rounded-lg text-sm font-medium ${getRoleColor(role.name)}`}>
                           {role.name}
                         </span>
-                         <Button
+                        <div className="flex gap-1">
+                          <Button
                             size="sm"
                             variant="outline"
                             onClick={() => setEditingRolePermissions(editingRolePermissions === role.id ? null : role.id)}
+                            className="h-8 w-8 p-0"
                           >
-                            {editingRolePermissions === role.id ? "Cancel" : "Edit"}
+                            <Edit className="h-3 w-3" />
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setRoles(roles.filter(r => r.id !== role.id));
+                              toast({
+                                title: "Success",
+                                description: "Role deleted successfully",
+                              });
+                            }}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -555,8 +566,11 @@ export default function RoleManagement() {
                             <div className="font-medium text-sm">{subFunc.name}</div>
                              {roles.map(role => {
                                let hasPermission = false;
-                               if (category.key === "exportContacts") {
+                               if (subFunc.permission === "exportContacts") {
                                  hasPermission = role.permissions.exportContacts;
+                               } else if (category.key === "clients") {
+                                 const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
+                                 hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
                                } else {
                                  const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
                                  hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
@@ -569,7 +583,7 @@ export default function RoleManagement() {
                                        value={hasPermission ? "full" : "none"}
                                        onValueChange={(value) => {
                                          const updatedPermissions = { ...role.permissions };
-                                         if (category.key === "exportContacts") {
+                                         if (subFunc.permission === "exportContacts") {
                                            updatedPermissions.exportContacts = value === "full";
                                          } else {
                                            (updatedPermissions[category.key as keyof typeof updatedPermissions] as any)[subFunc.permission] = value === "full";
