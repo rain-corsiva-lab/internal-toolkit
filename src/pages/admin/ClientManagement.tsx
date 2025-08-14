@@ -13,6 +13,7 @@ import { Client, ClientPOC, ClientFilters, POCFilters } from "@/types/admin";
 import AddClientForm from "@/components/admin/AddClientForm";
 import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
 import EditClientForm from "@/components/admin/EditClientForm";
+import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -29,6 +30,7 @@ export default function ClientManagement() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddPOCForm, setShowAddPOCForm] = useState(false);
   const [showEditClientForm, setShowEditClientForm] = useState(false);
+  const [showEditPOCForm, setShowEditPOCForm] = useState(false);
 
   const salesStaff = getSalesStaff();
 
@@ -372,13 +374,20 @@ export default function ClientManagement() {
                              </Button>
                            </TableCell>
                            <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Button variant="ghost" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
+                           <TableCell>
+                             <div className="flex items-center gap-2">
+                               <Button 
+                                 variant="ghost" 
+                                 size="sm"
+                                 onClick={() => {
+                                   setSelectedPOC(poc);
+                                   setShowEditPOCForm(true);
+                                 }}
+                               >
+                                 <Edit className="h-4 w-4" />
+                               </Button>
+                             </div>
+                           </TableCell>
                         </TableRow>
                       );
                     })}
@@ -467,6 +476,24 @@ export default function ClientManagement() {
             setSelectedClient(null);
           }}
           onSave={handleEditClient}
+        />
+      )}
+
+      {/* Edit POC Form */}
+      {showEditPOCForm && selectedPOC && (
+        <EditClientPOCForm 
+          poc={selectedPOC}
+          onClose={() => {
+            setShowEditPOCForm(false);
+            setSelectedPOC(null);
+          }}
+          onSave={(updatedPOC) => {
+            setClientPOCs(clientPOCs.map(poc => poc.id === updatedPOC.id ? updatedPOC : poc));
+            toast({
+              title: "Success",
+              description: "POC updated successfully",
+            });
+          }}
         />
       )}
     </div>

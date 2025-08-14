@@ -197,46 +197,47 @@ export default function RoleManagement() {
     });
   };
 
+  const permissionCategories = [
+    {
+      name: "Staff Management",
+      key: "staff",
+      subFunctions: [
+        { name: "Add Employee", permission: "create" },
+        { name: "View Employee", permission: "read" },
+        { name: "Edit Employee", permission: "update" },
+        { name: "Delete Employee", permission: "delete" }
+      ]
+    },
+    {
+      name: "Role Management", 
+      key: "roles",
+      subFunctions: [
+        { name: "Create Role", permission: "create" },
+        { name: "View Role", permission: "read" },
+        { name: "Edit Role", permission: "update" },
+        { name: "Delete Role", permission: "delete" }
+      ]
+    },
+    {
+      name: "Client Management",
+      key: "clients", 
+      subFunctions: [
+        { name: "Add Client", permission: "create" },
+        { name: "View Client", permission: "read" },
+        { name: "Edit Client", permission: "update" },
+        { name: "No Access", permission: "delete" }
+      ]
+    },
+    {
+      name: "Export Functions",
+      key: "exportContacts",
+      subFunctions: [
+        { name: "Export Contacts", permission: "exportContacts" }
+      ]
+    }
+  ];
+
   const PermissionMatrix = () => {
-    const permissionCategories = [
-      {
-        name: "Staff Management",
-        key: "staff",
-        subFunctions: [
-          { name: "Add Employee", permission: "create" },
-          { name: "View Employee", permission: "read" },
-          { name: "Edit Employee", permission: "update" },
-          { name: "Delete Employee", permission: "delete" }
-        ]
-      },
-      {
-        name: "Role Management", 
-        key: "roles",
-        subFunctions: [
-          { name: "Create Role", permission: "create" },
-          { name: "View Role", permission: "read" },
-          { name: "Edit Role", permission: "update" },
-          { name: "Delete Role", permission: "delete" }
-        ]
-      },
-        {
-          name: "Client Management",
-          key: "clients", 
-          subFunctions: [
-            { name: "Add Client", permission: "create" },
-            { name: "View Client", permission: "read" },
-            { name: "Edit Client", permission: "update" },
-            { name: "Delete Client", permission: "delete" }
-          ]
-        },
-        {
-          name: "Export Functions",
-          key: "exportContacts",
-          subFunctions: [
-            { name: "Export Contacts", permission: "exportContacts" }
-          ]
-        }
-    ];
 
     const getPermissionBadge = (hasPermission: boolean) => {
       if (hasPermission) {
@@ -327,12 +328,7 @@ export default function RoleManagement() {
           
           <div className="space-y-4">
             <h4 className="font-semibold">Permissions</h4>
-            {[
-              { name: "Staff Management", key: "staff" },
-              { name: "Role Management", key: "roles" },
-              { name: "Client Management", key: "clients" },
-              { name: "Export Contacts", key: "exportContacts" }
-            ].map(module => (
+            {permissionCategories.map(module => (
               <div key={module.key} className="space-y-2">
                 <Label>{module.name}</Label>
                 <Select 
@@ -389,12 +385,7 @@ export default function RoleManagement() {
           
           <div className="space-y-4">
             <h4 className="font-semibold">Permissions</h4>
-            {[
-              { name: "Staff Management", key: "staff" },
-              { name: "Role Management", key: "roles" },
-              { name: "Client Management", key: "clients" },
-              { name: "Export Contacts", key: "exportContacts" }
-            ].map(module => (
+            {permissionCategories.map(module => (
               <div key={module.key} className="space-y-2">
                 <Label>{module.name}</Label>
                 <Select 
@@ -514,39 +505,8 @@ export default function RoleManagement() {
                   ))}
                 </div>
 
-                {/* Permission Categories */}
-                {[
-                  {
-                    name: "Staff Management",
-                    key: "staff",
-                    subFunctions: [
-                      { name: "Add Employee", permission: "create" },
-                      { name: "View Employee", permission: "read" },
-                      { name: "Edit Employee", permission: "update" },
-                      { name: "Delete Employee", permission: "delete" }
-                    ]
-                  },
-                  {
-                    name: "Role Management", 
-                    key: "roles",
-                    subFunctions: [
-                      { name: "Create Role", permission: "create" },
-                      { name: "View Role", permission: "read" },
-                      { name: "Edit Role", permission: "update" },
-                      { name: "Delete Role", permission: "delete" }
-                    ]
-                  },
-                  {
-                    name: "Client Management",
-                    key: "clients", 
-                    subFunctions: [
-                      { name: "Add Client", permission: "create" },
-                      { name: "View Client", permission: "read" },
-                      { name: "Edit Client", permission: "update" },
-                      { name: "Delete Client", permission: "delete" }
-                    ]
-                  }
-                ].map(category => (
+                 {/* Permission Categories */}
+                {permissionCategories.map(category => (
                   <Card key={category.key}>
                     <CardHeader>
                       <CardTitle className="text-lg">{category.name}</CardTitle>
@@ -557,22 +517,59 @@ export default function RoleManagement() {
                           <div key={subFunc.name} className="grid grid-cols-6 gap-4 items-center py-2 border-b last:border-b-0">
                             <div className="font-medium text-sm">{subFunc.name}</div>
                             {roles.map(role => {
-                              const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
-                              const hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                              let hasPermission = false;
+                              if (category.key === "exportContacts") {
+                                hasPermission = role.permissions.exportContacts;
+                              } else {
+                                const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
+                                hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                              }
                               
                               return (
                                 <div key={role.id} className="flex justify-center">
-                                  {hasPermission ? (
-                                    <Badge variant="default" className="text-xs">
-                                      <Check className="h-3 w-3 mr-1" />
-                                      Full Access
-                                    </Badge>
-                                  ) : (
-                                    <Badge variant="outline" className="text-xs">
-                                      <X className="h-3 w-3 mr-1" />
-                                      No Access
-                                    </Badge>
-                                  )}
+                                  <Select 
+                                    value={hasPermission ? "full" : "none"}
+                                    onValueChange={(value) => {
+                                      const updatedRoles = roles.map(r => {
+                                        if (r.id === role.id) {
+                                          if (category.key === "exportContacts") {
+                                            return {
+                                              ...r,
+                                              permissions: {
+                                                ...r.permissions,
+                                                exportContacts: value === "full"
+                                              }
+                                            };
+                                          } else {
+                                            return {
+                                              ...r,
+                                              permissions: {
+                                                ...r.permissions,
+                                                 [category.key]: {
+                                                   ...(r.permissions[category.key as keyof typeof r.permissions] as any),
+                                                   [subFunc.permission]: value === "full"
+                                                 }
+                                              }
+                                            };
+                                          }
+                                        }
+                                        return r;
+                                      });
+                                      setRoles(updatedRoles);
+                                      toast({
+                                        title: "Success",
+                                        description: "Permission updated successfully"
+                                      });
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-24">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="none">No Access</SelectItem>
+                                      <SelectItem value="full">Full Access</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 </div>
                               );
                             })}
@@ -582,6 +579,17 @@ export default function RoleManagement() {
                     </CardContent>
                   </Card>
                 ))}
+                
+                <div className="flex justify-end">
+                  <Button onClick={() => {
+                    toast({
+                      title: "Success",
+                      description: "All changes saved successfully"
+                    });
+                  }}>
+                    Save Changes
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
