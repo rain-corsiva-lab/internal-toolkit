@@ -21,6 +21,7 @@ export default function RoleManagement() {
   const [showEditRoleForm, setShowEditRoleForm] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [editingStaffRole, setEditingStaffRole] = useState<string | null>(null);
+  const [editingRolePermissions, setEditingRolePermissions] = useState<string | null>(null);
   const [newRoleName, setNewRoleName] = useState("");
   const [newRolePermissions, setNewRolePermissions] = useState({
     staff: { create: false, read: false, update: false, delete: false },
@@ -283,20 +284,50 @@ export default function RoleManagement() {
                   <div key={subFunc.name} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center py-2 border-b last:border-b-0">
                     <div className="font-medium text-sm">{subFunc.name}</div>
                      {roles.map(role => {
-                       let hasPermission = false;
-                       if (category.key === "exportContacts") {
-                         hasPermission = role.permissions.exportContacts;
-                       } else {
-                         const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
-                         hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
-                       }
-                       
-                       return (
-                         <div key={role.id} className="flex justify-center">
-                           {getPermissionBadge(hasPermission)}
-                         </div>
-                       );
-                     })}
+                        let hasPermission = false;
+                        if (category.key === "exportContacts") {
+                          hasPermission = role.permissions.exportContacts;
+                        } else {
+                          const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
+                          hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                        }
+                        
+                        return (
+                          <div key={role.id} className="flex justify-center">
+                            {editingRolePermissions === role.id ? (
+                              <div className="flex gap-2">
+                                <Select 
+                                  value={hasPermission ? "full" : "none"}
+                                  onValueChange={(value) => {
+                                    const updatedPermissions = { ...role.permissions };
+                                    if (category.key === "exportContacts") {
+                                      updatedPermissions.exportContacts = value === "full";
+                                    } else {
+                                      updatedPermissions[category.key as keyof typeof updatedPermissions][subFunc.permission as keyof any] = value === "full";
+                                    }
+                                    
+                                    setRoles(roles.map(r => 
+                                      r.id === role.id 
+                                        ? { ...r, permissions: updatedPermissions, lastUpdated: new Date().toISOString() }
+                                        : r
+                                    ));
+                                  }}
+                                >
+                                  <SelectTrigger className="w-24 h-8">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="none">No Access</SelectItem>
+                                    <SelectItem value="full">Full Access</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            ) : (
+                              getPermissionBadge(hasPermission)
+                            )}
+                          </div>
+                        );
+                      })}
                   </div>
                 ))}
               </div>
@@ -327,26 +358,49 @@ export default function RoleManagement() {
           </div>
           
           <div className="space-y-4">
-            <h4 className="font-semibold">Permissions</h4>
-            {permissionCategories.map(module => (
-              <div key={module.key} className="space-y-2">
-                <Label>{module.name}</Label>
-                <Select 
-                  value={module.key === "exportContacts" 
-                    ? (newRolePermissions.exportContacts ? "full" : "none")
-                    : getPermissionLevel(newRolePermissions[module.key as keyof typeof newRolePermissions])
-                  }
-                  onValueChange={(value) => setPermissionLevel(module.key, value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No Access</SelectItem>
-                    {module.key !== "exportContacts" && <SelectItem value="read">View Only</SelectItem>}
-                    <SelectItem value="full">Full Access</SelectItem>
-                  </SelectContent>
-                </Select>
+            <h4 className="font-semibold">Permissions *</h4>
+            {permissionCategories.map(category => (
+              <div key={category.key} className="space-y-3">
+                <h5 className="font-medium text-sm">{category.name}</h5>
+                {category.subFunctions.map(subFunc => (
+                  <div key={subFunc.name} className="flex items-center justify-between p-3 border rounded-lg">
+                    <span className="text-sm">{subFunc.name}</span>
+                    <Select 
+                      value={(() => {
+                        if (category.key === "exportContacts") {
+                          return newRolePermissions.exportContacts ? "full" : "none";
+                        } else {
+                          const categoryPerms = newRolePermissions[category.key as keyof typeof newRolePermissions];
+                          return categoryPerms[subFunc.permission as keyof typeof categoryPerms] ? "full" : "none";
+                        }
+                      })()}
+                      onValueChange={(value) => {
+                        if (category.key === "exportContacts") {
+                          setNewRolePermissions(prev => ({
+                            ...prev,
+                            exportContacts: value === "full"
+                          }));
+                        } else {
+                          setNewRolePermissions(prev => ({
+                            ...prev,
+                            [category.key]: {
+                              ...(prev[category.key as keyof typeof prev] as any),
+                              [subFunc.permission]: value === "full"
+                            }
+                          }));
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Access</SelectItem>
+                        <SelectItem value="full">Full Access</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
@@ -476,30 +530,13 @@ export default function RoleManagement() {
                         <span className={`px-3 py-2 rounded-lg text-sm font-medium ${getRoleColor(role.name)}`}>
                           {role.name}
                         </span>
-                         <div className="flex gap-1">
-                           <Button
-                             variant="outline"
-                             size="sm"
-                             onClick={() => handleEditRole(role)}
-                             className="h-8 w-8 p-0"
-                           >
-                             <Edit className="h-3 w-3" />
-                           </Button>
-                           <Button
-                             variant="outline"
-                             size="sm"
-                             onClick={() => {
-                               setRoles(roles.filter(r => r.id !== role.id));
-                               toast({
-                                title: "Success",
-                                description: "Role deleted successfully",
-                              });
-                            }}
-                            className="h-8 w-8 p-0"
+                         <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingRolePermissions(editingRolePermissions === role.id ? null : role.id)}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            {editingRolePermissions === role.id ? "Cancel" : "Edit"}
                           </Button>
-                        </div>
                       </div>
                     </div>
                   ))}
@@ -516,63 +553,54 @@ export default function RoleManagement() {
                         {category.subFunctions.map(subFunc => (
                           <div key={subFunc.name} className="grid grid-cols-6 gap-4 items-center py-2 border-b last:border-b-0">
                             <div className="font-medium text-sm">{subFunc.name}</div>
-                            {roles.map(role => {
-                              let hasPermission = false;
-                              if (category.key === "exportContacts") {
-                                hasPermission = role.permissions.exportContacts;
-                              } else {
-                                const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
-                                hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
-                              }
-                              
-                              return (
-                                <div key={role.id} className="flex justify-center">
-                                  <Select 
-                                    value={hasPermission ? "full" : "none"}
-                                    onValueChange={(value) => {
-                                      const updatedRoles = roles.map(r => {
-                                        if (r.id === role.id) {
-                                          if (category.key === "exportContacts") {
-                                            return {
-                                              ...r,
-                                              permissions: {
-                                                ...r.permissions,
-                                                exportContacts: value === "full"
-                                              }
-                                            };
-                                          } else {
-                                            return {
-                                              ...r,
-                                              permissions: {
-                                                ...r.permissions,
-                                                 [category.key]: {
-                                                   ...(r.permissions[category.key as keyof typeof r.permissions] as any),
-                                                   [subFunc.permission]: value === "full"
-                                                 }
-                                              }
-                                            };
-                                          }
-                                        }
-                                        return r;
-                                      });
-                                      setRoles(updatedRoles);
-                                      toast({
-                                        title: "Success",
-                                        description: "Permission updated successfully"
-                                      });
-                                    }}
-                                  >
-                                    <SelectTrigger className="w-24">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="none">No Access</SelectItem>
-                                      <SelectItem value="full">Full Access</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              );
-                            })}
+                             {roles.map(role => {
+                               let hasPermission = false;
+                               if (category.key === "exportContacts") {
+                                 hasPermission = role.permissions.exportContacts;
+                               } else {
+                                 const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
+                                 hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                               }
+                               
+                               return (
+                                 <div key={role.id} className="flex justify-center">
+                                   {editingRolePermissions === role.id ? (
+                                     <Select 
+                                       value={hasPermission ? "full" : "none"}
+                                       onValueChange={(value) => {
+                                         const updatedPermissions = { ...role.permissions };
+                                         if (category.key === "exportContacts") {
+                                           updatedPermissions.exportContacts = value === "full";
+                                         } else {
+                                           (updatedPermissions[category.key as keyof typeof updatedPermissions] as any)[subFunc.permission] = value === "full";
+                                         }
+                                         
+                                         setRoles(roles.map(r => 
+                                           r.id === role.id 
+                                             ? { ...r, permissions: updatedPermissions, lastUpdated: new Date().toISOString() }
+                                             : r
+                                         ));
+                                       }}
+                                     >
+                                       <SelectTrigger className="w-24 h-8">
+                                         <SelectValue />
+                                       </SelectTrigger>
+                                       <SelectContent>
+                                         <SelectItem value="none">No Access</SelectItem>
+                                         <SelectItem value="full">Full Access</SelectItem>
+                                       </SelectContent>
+                                     </Select>
+                                   ) : (
+                                     <Badge variant={hasPermission ? "default" : "outline"} className="text-xs">
+                                       <div className="flex items-center gap-1">
+                                         {hasPermission ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                                         {hasPermission ? "Full Access" : "No Access"}
+                                       </div>
+                                     </Badge>
+                                   )}
+                                 </div>
+                               );
+                             })}
                           </div>
                         ))}
                       </div>
@@ -580,16 +608,21 @@ export default function RoleManagement() {
                   </Card>
                 ))}
                 
-                <div className="flex justify-end">
-                  <Button onClick={() => {
-                    toast({
-                      title: "Success",
-                      description: "All changes saved successfully"
-                    });
-                  }}>
-                    Save Changes
-                  </Button>
-                </div>
+                 {editingRolePermissions && (
+                   <div className="flex justify-end mt-4">
+                     <Button 
+                       onClick={() => {
+                         setEditingRolePermissions(null);
+                         toast({
+                           title: "Success",
+                           description: "Role permissions updated successfully",
+                         });
+                       }}
+                     >
+                       Save Changes
+                     </Button>
+                   </div>
+                 )}
               </div>
             </CardContent>
           </Card>
