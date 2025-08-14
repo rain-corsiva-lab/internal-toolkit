@@ -43,6 +43,10 @@ export default function ClientManagement() {
     }
     if (clientFilters.country && client.country !== clientFilters.country) return false;
     if (clientFilters.industry && client.industry !== clientFilters.industry) return false;
+    if (clientFilters.numberOfProjects) {
+      const filterValue = parseInt(clientFilters.numberOfProjects);
+      if (!isNaN(filterValue) && client.numberOfProjects !== filterValue) return false;
+    }
     return true;
   });
 
@@ -205,17 +209,13 @@ export default function ClientManagement() {
                   </SelectContent>
                 </Select>
 
-                <Select value="" onValueChange={() => {}}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Filter by Projects" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">0 Projects</SelectItem>
-                    <SelectItem value="1-5">1-5 Projects</SelectItem>
-                    <SelectItem value="6-10">6-10 Projects</SelectItem>
-                    <SelectItem value="10+">10+ Projects</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input
+                  placeholder="Filter by number of projects"
+                  value={clientFilters.numberOfProjects || ""}
+                  onChange={(e) => setClientFilters({ ...clientFilters, numberOfProjects: e.target.value })}
+                  type="number"
+                  min="0"
+                />
 
                 <Button variant="outline" onClick={handleExportClientsCSV} className="w-full">
                   <Download className="h-4 w-4 mr-2" />
@@ -350,7 +350,6 @@ export default function ClientManagement() {
                       <TableHead>Email</TableHead>
                       <TableHead>Company</TableHead>
                       <TableHead>Sales PIC</TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -373,20 +372,6 @@ export default function ClientManagement() {
                              </Button>
                            </TableCell>
                            <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
-                           <TableCell>
-                             <Button
-                               variant="ghost"
-                               size="sm"
-                               onClick={() => handleTogglePOCStatus(poc.id)}
-                               className={`${poc.projectStatus === "Active" 
-                                 ? "text-green-600 hover:text-green-800 hover:bg-green-50" 
-                                 : "text-red-600 hover:text-red-800 hover:bg-red-50"}`}
-                             >
-                               <Badge variant={poc.projectStatus === "Active" ? "default" : "secondary"}>
-                                 {poc.projectStatus}
-                               </Badge>
-                             </Button>
-                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Button variant="ghost" size="sm">

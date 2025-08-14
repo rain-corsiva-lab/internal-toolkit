@@ -33,6 +33,7 @@ export interface RolePermissions {
   staff: CRUDPermissions;
   roles: CRUDPermissions;
   clients: CRUDPermissions;
+  exportContacts: boolean;
 }
 
 export interface CRUDPermissions {
@@ -97,6 +98,7 @@ export interface ClientFilters {
   country?: string;
   industry?: string;
   search?: string;
+  numberOfProjects?: string;
 }
 
 export interface POCFilters {

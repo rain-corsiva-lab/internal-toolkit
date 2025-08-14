@@ -4,14 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Edit, Plus } from "lucide-react";
+import { ArrowLeft, Edit, Plus, Trash2 } from "lucide-react";
 import { mockClients, getClientPOCsByClient, getSalesStaff } from "@/data/mockData";
 import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
 import EditClientForm from "@/components/admin/EditClientForm";
 import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
 import { ClientPOC, Client } from "@/types/admin";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ClientDetail() {
+  const { toast } = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
   const [showAddPOCForm, setShowAddPOCForm] = useState(false);
@@ -56,6 +58,17 @@ export default function ClientDetail() {
     setShowEditPOCForm(true);
   };
 
+  const handleDeleteClient = () => {
+    if (window.confirm("Are you sure you want to delete this client? This action cannot be undone.")) {
+      // In a real app, this would call an API to delete the client
+      toast({
+        title: "Client Deleted",
+        description: "The client has been successfully deleted.",
+      });
+      navigate("/admin/clients");
+    }
+  };
+
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center gap-4 mb-6">
@@ -66,12 +79,19 @@ export default function ClientDetail() {
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-3xl font-bold tracking-tight">{client.companyName}</h1>
           <p className="text-muted-foreground">
             Complete company information and client POCs
           </p>
         </div>
+        <Button 
+          variant="destructive"
+          onClick={handleDeleteClient}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          Delete Client
+        </Button>
       </div>
 
       {/* Company Information */}
@@ -118,14 +138,11 @@ export default function ClientDetail() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {client.addresses.map(address => (
-              <div key={address.id} className="p-3 bg-muted rounded-lg">
-                <div className="flex items-center justify-between">
+              {client.addresses.map(address => (
+                <div key={address.id} className="p-3 bg-muted rounded-lg">
                   <p className="text-sm">{address.address}</p>
-                  <Badge variant="outline">{address.type}</Badge>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </CardContent>
       </Card>
@@ -152,8 +169,7 @@ export default function ClientDetail() {
                   <TableHead>Designation</TableHead>
                   <TableHead>Sales PIC</TableHead>
                   <TableHead>Project</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                      <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -179,11 +195,6 @@ export default function ClientDetail() {
                         ) : (
                           <span className="text-muted-foreground text-sm">No project</span>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getStatusBadge(poc.projectStatus)}>
-                          {poc.projectStatus}
-                        </Badge>
                       </TableCell>
                       <TableCell>
                         <Button 

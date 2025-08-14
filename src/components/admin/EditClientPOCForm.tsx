@@ -6,63 +6,61 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { ClientPOC } from "@/types/admin";
+import { getSalesStaff } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
-import { getSalesStaff, mockClients } from "@/data/mockData";
 
 interface EditClientPOCFormProps {
   poc: ClientPOC;
   onClose: () => void;
-  onSave: (poc: ClientPOC) => void;
+  onSave: (updatedPOC: ClientPOC) => void;
 }
 
 export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPOCFormProps) {
   const { toast } = useToast();
-  const salesStaff = getSalesStaff();
-  const client = mockClients.find(c => c.id === poc.clientId);
-  
   const [formData, setFormData] = useState({
     contactName: poc.contactName,
     contactNumber: poc.contactNumber,
     contactEmail: poc.contactEmail,
     designation: poc.designation,
     salesPIC: poc.salesPIC,
-    projectStatus: poc.projectStatus
+    projectStatus: poc.projectStatus,
+    projectName: poc.projectName || "",
+    projectType: poc.projectType || ""
   });
+
+  const salesStaff = getSalesStaff();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.contactName || !formData.contactNumber || !formData.contactEmail || 
-        !formData.designation || !formData.salesPIC) {
+
+    if (!formData.contactName.trim() || !formData.contactNumber.trim() || 
+        !formData.contactEmail.trim() || !formData.designation.trim() || 
+        !formData.salesPIC) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
     const updatedPOC: ClientPOC = {
       ...poc,
-      contactName: formData.contactName,
-      contactNumber: formData.contactNumber,
-      contactEmail: formData.contactEmail,
-      designation: formData.designation,
-      salesPIC: formData.salesPIC,
-      projectStatus: formData.projectStatus,
+      ...formData,
       updatedAt: new Date().toISOString()
     };
 
     onSave(updatedPOC);
+    onClose();
+
     toast({
       title: "Success",
-      description: "Client POC updated successfully"
+      description: "Client POC updated successfully",
     });
-    onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -70,26 +68,15 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
               <CardTitle>Edit Client POC</CardTitle>
               <CardDescription>Update client point of contact information</CardDescription>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
-        
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="company">Company</Label>
-              <Input
-                id="company"
-                value={client?.companyName || "Unknown Company"}
-                disabled
-                className="bg-muted"
-              />
-            </div>
-
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="contactName">Contact Name *</Label>
                 <Input
                   id="contactName"
@@ -99,8 +86,8 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                   required
                 />
               </div>
-              
-              <div>
+
+              <div className="space-y-2">
                 <Label htmlFor="contactNumber">Contact Number *</Label>
                 <Input
                   id="contactNumber"
@@ -110,9 +97,9 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                   required
                 />
               </div>
-              
-              <div>
-                <Label htmlFor="contactEmail">Contact Email Address *</Label>
+
+              <div className="space-y-2">
+                <Label htmlFor="contactEmail">Contact Email *</Label>
                 <Input
                   id="contactEmail"
                   type="email"
@@ -122,9 +109,9 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                   required
                 />
               </div>
-              
-              <div>
-                <Label htmlFor="designation">Contact Designation *</Label>
+
+              <div className="space-y-2">
+                <Label htmlFor="designation">Designation *</Label>
                 <Input
                   id="designation"
                   value={formData.designation}
@@ -133,18 +120,15 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                   required
                 />
               </div>
-              
-              <div>
+
+              <div className="space-y-2">
                 <Label htmlFor="salesPIC">Sales PIC *</Label>
-                <Select 
-                  value={formData.salesPIC} 
-                  onValueChange={(value) => setFormData({ ...formData, salesPIC: value })}
-                >
+                <Select value={formData.salesPIC} onValueChange={(value) => setFormData({ ...formData, salesPIC: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select sales person" />
                   </SelectTrigger>
                   <SelectContent>
-                    {salesStaff.map((staff) => (
+                    {salesStaff.map(staff => (
                       <SelectItem key={staff.id} value={staff.id}>
                         {staff.fullName}
                       </SelectItem>
@@ -152,15 +136,12 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div>
-                <Label htmlFor="pocStatus">POC Status</Label>
-                <Select 
-                  value={formData.projectStatus} 
-                  onValueChange={(value) => setFormData({ ...formData, projectStatus: value as "Active" | "Inactive" })}
-                >
+
+              <div className="space-y-2">
+                <Label htmlFor="projectStatus">Project Status</Label>
+                <Select value={formData.projectStatus} onValueChange={(value) => setFormData({ ...formData, projectStatus: value as "Active" | "Inactive" })}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select project status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Active">Active</SelectItem>
@@ -168,14 +149,34 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="projectName">Project Name</Label>
+                <Input
+                  id="projectName"
+                  value={formData.projectName}
+                  onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
+                  placeholder="Enter project name (optional)"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="projectType">Project Type</Label>
+                <Input
+                  id="projectType"
+                  value={formData.projectType}
+                  onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
+                  placeholder="Enter project type (optional)"
+                />
+              </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
+            <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
               <Button type="submit">
-                Save Changes
+                Update POC
               </Button>
             </div>
           </form>

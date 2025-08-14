@@ -25,13 +25,15 @@ export default function RoleManagement() {
   const [newRolePermissions, setNewRolePermissions] = useState({
     staff: { create: false, read: false, update: false, delete: false },
     roles: { create: false, read: false, update: false, delete: false },
-    clients: { create: false, read: false, update: false, delete: false }
+    clients: { create: false, read: false, update: false, delete: false },
+    exportContacts: false
   });
   const [editRoleName, setEditRoleName] = useState("");
   const [editRolePermissions, setEditRolePermissions] = useState({
     staff: { create: false, read: false, update: false, delete: false },
     roles: { create: false, read: false, update: false, delete: false },
-    clients: { create: false, read: false, update: false, delete: false }
+    clients: { create: false, read: false, update: false, delete: false },
+    exportContacts: false
   });
 
   const formatDate = (dateString: string) => {
@@ -70,27 +72,41 @@ export default function RoleManagement() {
   };
 
   const setPermissionLevel = (module: string, level: string) => {
-    setNewRolePermissions(prev => ({
-      ...prev,
-      [module]: {
-        create: level === "full",
-        read: level === "full" || level === "read",
-        update: level === "full",
-        delete: level === "full"
-      }
-    }));
+    if (module === "exportContacts") {
+      setNewRolePermissions(prev => ({
+        ...prev,
+        exportContacts: level === "full"
+      }));
+    } else {
+      setNewRolePermissions(prev => ({
+        ...prev,
+        [module]: {
+          create: level === "full",
+          read: level === "full" || level === "read",
+          update: level === "full",
+          delete: level === "full"
+        }
+      }));
+    }
   };
 
   const setEditPermissionLevel = (module: string, level: string) => {
-    setEditRolePermissions(prev => ({
-      ...prev,
-      [module]: {
-        create: level === "full",
-        read: level === "full" || level === "read",
-        update: level === "full",
-        delete: level === "full"
-      }
-    }));
+    if (module === "exportContacts") {
+      setEditRolePermissions(prev => ({
+        ...prev,
+        exportContacts: level === "full"
+      }));
+    } else {
+      setEditRolePermissions(prev => ({
+        ...prev,
+        [module]: {
+          create: level === "full",
+          read: level === "full" || level === "read",
+          update: level === "full",
+          delete: level === "full"
+        }
+      }));
+    }
   };
 
   const handleEditRole = (role: Role) => {
@@ -122,7 +138,8 @@ export default function RoleManagement() {
     setEditRolePermissions({
       staff: { create: false, read: false, update: false, delete: false },
       roles: { create: false, read: false, update: false, delete: false },
-      clients: { create: false, read: false, update: false, delete: false }
+      clients: { create: false, read: false, update: false, delete: false },
+      exportContacts: false
     });
     setEditingRole(null);
     setShowEditRoleForm(false);
@@ -156,7 +173,8 @@ export default function RoleManagement() {
     setNewRolePermissions({
       staff: { create: false, read: false, update: false, delete: false },
       roles: { create: false, read: false, update: false, delete: false },
-      clients: { create: false, read: false, update: false, delete: false }
+      clients: { create: false, read: false, update: false, delete: false },
+      exportContacts: false
     });
     setShowCreateRoleForm(false);
     
@@ -201,16 +219,23 @@ export default function RoleManagement() {
           { name: "Delete Role", permission: "delete" }
         ]
       },
-      {
-        name: "Client Management",
-        key: "clients", 
-        subFunctions: [
-          { name: "Add Client", permission: "create" },
-          { name: "View Client", permission: "read" },
-          { name: "Edit Client", permission: "update" },
-          { name: "Delete Client", permission: "delete" }
-        ]
-      }
+        {
+          name: "Client Management",
+          key: "clients", 
+          subFunctions: [
+            { name: "Add Client", permission: "create" },
+            { name: "View Client", permission: "read" },
+            { name: "Edit Client", permission: "update" },
+            { name: "Delete Client", permission: "delete" }
+          ]
+        },
+        {
+          name: "Export Functions",
+          key: "exportContacts",
+          subFunctions: [
+            { name: "Export Contacts", permission: "exportContacts" }
+          ]
+        }
     ];
 
     const getPermissionBadge = (hasPermission: boolean) => {
@@ -256,16 +281,21 @@ export default function RoleManagement() {
                 {category.subFunctions.map(subFunc => (
                   <div key={subFunc.name} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center py-2 border-b last:border-b-0">
                     <div className="font-medium text-sm">{subFunc.name}</div>
-                    {roles.map(role => {
-                      const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
-                      const hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
-                      
-                      return (
-                        <div key={role.id} className="flex justify-center">
-                          {getPermissionBadge(hasPermission)}
-                        </div>
-                      );
-                    })}
+                     {roles.map(role => {
+                       let hasPermission = false;
+                       if (category.key === "exportContacts") {
+                         hasPermission = role.permissions.exportContacts;
+                       } else {
+                         const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
+                         hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                       }
+                       
+                       return (
+                         <div key={role.id} className="flex justify-center">
+                           {getPermissionBadge(hasPermission)}
+                         </div>
+                       );
+                     })}
                   </div>
                 ))}
               </div>
@@ -300,12 +330,16 @@ export default function RoleManagement() {
             {[
               { name: "Staff Management", key: "staff" },
               { name: "Role Management", key: "roles" },
-              { name: "Client Management", key: "clients" }
+              { name: "Client Management", key: "clients" },
+              { name: "Export Contacts", key: "exportContacts" }
             ].map(module => (
               <div key={module.key} className="space-y-2">
                 <Label>{module.name}</Label>
                 <Select 
-                  value={getPermissionLevel(newRolePermissions[module.key as keyof typeof newRolePermissions])}
+                  value={module.key === "exportContacts" 
+                    ? (newRolePermissions.exportContacts ? "full" : "none")
+                    : getPermissionLevel(newRolePermissions[module.key as keyof typeof newRolePermissions])
+                  }
                   onValueChange={(value) => setPermissionLevel(module.key, value)}
                 >
                   <SelectTrigger>
@@ -313,7 +347,7 @@ export default function RoleManagement() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">No Access</SelectItem>
-                    <SelectItem value="read">View Only</SelectItem>
+                    {module.key !== "exportContacts" && <SelectItem value="read">View Only</SelectItem>}
                     <SelectItem value="full">Full Access</SelectItem>
                   </SelectContent>
                 </Select>
@@ -358,12 +392,16 @@ export default function RoleManagement() {
             {[
               { name: "Staff Management", key: "staff" },
               { name: "Role Management", key: "roles" },
-              { name: "Client Management", key: "clients" }
+              { name: "Client Management", key: "clients" },
+              { name: "Export Contacts", key: "exportContacts" }
             ].map(module => (
               <div key={module.key} className="space-y-2">
                 <Label>{module.name}</Label>
                 <Select 
-                  value={getPermissionLevel(editRolePermissions[module.key as keyof typeof editRolePermissions])}
+                  value={module.key === "exportContacts" 
+                    ? (editRolePermissions.exportContacts ? "full" : "none")
+                    : getPermissionLevel(editRolePermissions[module.key as keyof typeof editRolePermissions])
+                  }
                   onValueChange={(value) => setEditPermissionLevel(module.key, value)}
                 >
                   <SelectTrigger>
@@ -371,7 +409,7 @@ export default function RoleManagement() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">No Access</SelectItem>
-                    <SelectItem value="read">View Only</SelectItem>
+                    {module.key !== "exportContacts" && <SelectItem value="read">View Only</SelectItem>}
                     <SelectItem value="full">Full Access</SelectItem>
                   </SelectContent>
                 </Select>
@@ -387,7 +425,8 @@ export default function RoleManagement() {
               setEditRolePermissions({
                 staff: { create: false, read: false, update: false, delete: false },
                 roles: { create: false, read: false, update: false, delete: false },
-                clients: { create: false, read: false, update: false, delete: false }
+                clients: { create: false, read: false, update: false, delete: false },
+                exportContacts: false
               });
             }}>
               Cancel
@@ -446,29 +485,21 @@ export default function RoleManagement() {
                         <span className={`px-3 py-2 rounded-lg text-sm font-medium ${getRoleColor(role.name)}`}>
                           {role.name}
                         </span>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditRole(role)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedRole(role)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Eye className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setRoles(roles.filter(r => r.id !== role.id));
-                              toast({
+                         <div className="flex gap-1">
+                           <Button
+                             variant="outline"
+                             size="sm"
+                             onClick={() => handleEditRole(role)}
+                             className="h-8 w-8 p-0"
+                           >
+                             <Edit className="h-3 w-3" />
+                           </Button>
+                           <Button
+                             variant="outline"
+                             size="sm"
+                             onClick={() => {
+                               setRoles(roles.filter(r => r.id !== role.id));
+                               toast({
                                 title: "Success",
                                 description: "Role deleted successfully",
                               });
@@ -577,7 +608,6 @@ export default function RoleManagement() {
                       <TableHead>Department</TableHead>
                       <TableHead>Employment Type</TableHead>
                       <TableHead>Assigned Role</TableHead>
-                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -633,15 +663,6 @@ export default function RoleManagement() {
                               <Edit className="h-3 w-3 text-muted-foreground" />
                             </div>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingStaffRole(member.id)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
