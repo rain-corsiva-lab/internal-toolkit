@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { mockStaff } from "@/data/mockData";
+import { mockStaff, mockRoles } from "@/data/mockData";
 import type { Staff } from "@/types/admin";
 
 export default function EditStaff() {
@@ -31,6 +31,9 @@ export default function EditStaff() {
     leaveApproverEmail: staff?.leaveApproverEmail || "",
     lastLoginDate: staff?.lastLoginDate || "",
     isDeleted: staff?.isDeleted || false,
+    roleId: staff?.roleId || "",
+    allowance: staff?.allowance || "",
+    grossSalary: staff?.grossSalary || ""
   });
 
   if (!staff) {
@@ -239,15 +242,73 @@ export default function EditStaff() {
             </div>
             
             <div className="space-y-2">
+              <Label htmlFor="role">Assigned Role</Label>
+              <Select value={formData.roleId} onValueChange={(value) => setFormData({ ...formData, roleId: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockRoles.map((role) => (
+                    <SelectItem key={role.id} value={role.id}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="leaveApproverEmail">Leave Approver Email *</Label>
-              <Input
-                id="leaveApproverEmail"
-                type="email"
-                value={formData.leaveApproverEmail}
-                onChange={(e) => setFormData({ ...formData, leaveApproverEmail: e.target.value })}
-                placeholder="Enter leave approver email"
-                required
-              />
+              <Select value={formData.leaveApproverEmail} onValueChange={(value) => setFormData({ ...formData, leaveApproverEmail: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select leave approver" />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockStaff.filter(s => !s.isDeleted && s.id !== staff?.id).map((staffMember) => (
+                    <SelectItem key={staffMember.id} value={staffMember.workEmail}>
+                      {staffMember.fullName} - {staffMember.workEmail}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="allowance">Allowance (Optional)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
+                  {formData.country === "Singapore" ? "SGD" : 
+                   formData.country === "Malaysia" ? "MYR" : 
+                   formData.country === "Vietnam" ? "VND" : 
+                   formData.country === "Indonesia" ? "IDR" : ""}
+                </span>
+                <Input
+                  id="allowance"
+                  value={formData.allowance}
+                  onChange={(e) => setFormData({ ...formData, allowance: e.target.value })}
+                  placeholder="Enter allowance amount"
+                  className="pl-12"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="grossSalary">Gross Salary (Optional)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
+                  {formData.country === "Singapore" ? "SGD" : 
+                   formData.country === "Malaysia" ? "MYR" : 
+                   formData.country === "Vietnam" ? "VND" : 
+                   formData.country === "Indonesia" ? "IDR" : ""}
+                </span>
+                <Input
+                  id="grossSalary"
+                  value={formData.grossSalary}
+                  onChange={(e) => setFormData({ ...formData, grossSalary: e.target.value })}
+                  placeholder="Enter gross salary amount"
+                  className="pl-12"
+                />
+              </div>
             </div>
           </div>
           

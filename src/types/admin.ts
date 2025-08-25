@@ -17,6 +17,8 @@ export interface Staff {
   createdAt: string;
   updatedAt: string;
   roleId?: string;
+  allowance?: string;
+  grossSalary?: string;
 }
 
 // Role Management Types

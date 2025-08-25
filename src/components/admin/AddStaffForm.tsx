@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { Staff } from "@/types/admin";
-import { mockRoles } from "@/data/mockData";
+import { mockRoles, mockStaff } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 
 interface AddStaffFormProps {
@@ -27,7 +27,9 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
     designation: "",
     otApproverEmail: "",
     leaveApproverEmail: "",
-    roleId: ""
+    roleId: "",
+    allowance: "",
+    grossSalary: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,7 +60,9 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
       isDeleted: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      roleId: formData.roleId
+      roleId: formData.roleId,
+      allowance: formData.allowance || undefined,
+      grossSalary: formData.grossSalary || undefined
     };
 
     onSubmit(newStaff);
@@ -206,13 +210,56 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
               
               <div className="space-y-2">
                 <Label htmlFor="leaveApproverEmail">Leave Approver Email</Label>
-                <Input
-                  id="leaveApproverEmail"
-                  type="email"
-                  value={formData.leaveApproverEmail}
-                  onChange={(e) => setFormData({ ...formData, leaveApproverEmail: e.target.value })}
-                  placeholder="Enter leave approver email"
-                />
+                <Select value={formData.leaveApproverEmail} onValueChange={(value) => setFormData({ ...formData, leaveApproverEmail: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select leave approver" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mockStaff.filter(s => !s.isDeleted).map((staff) => (
+                      <SelectItem key={staff.id} value={staff.workEmail}>
+                        {staff.fullName} - {staff.workEmail}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="allowance">Allowance (Optional)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
+                    {formData.country === "Singapore" ? "SGD" : 
+                     formData.country === "Malaysia" ? "MYR" : 
+                     formData.country === "Vietnam" ? "VND" : 
+                     formData.country === "Indonesia" ? "IDR" : ""}
+                  </span>
+                  <Input
+                    id="allowance"
+                    value={formData.allowance}
+                    onChange={(e) => setFormData({ ...formData, allowance: e.target.value })}
+                    placeholder="Enter allowance amount"
+                    className="pl-12"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="grossSalary">Gross Salary (Optional)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
+                    {formData.country === "Singapore" ? "SGD" : 
+                     formData.country === "Malaysia" ? "MYR" : 
+                     formData.country === "Vietnam" ? "VND" : 
+                     formData.country === "Indonesia" ? "IDR" : ""}
+                  </span>
+                  <Input
+                    id="grossSalary"
+                    value={formData.grossSalary}
+                    onChange={(e) => setFormData({ ...formData, grossSalary: e.target.value })}
+                    placeholder="Enter gross salary amount"
+                    className="pl-12"
+                  />
+                </div>
               </div>
             </div>
 

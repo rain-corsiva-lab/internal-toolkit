@@ -496,9 +496,8 @@ export default function RoleManagement() {
       </div>
 
       <Tabs defaultValue="roles" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="roles">System Role Permission</TabsTrigger>
-          <TabsTrigger value="assignments">Staff Role Assignments</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-1">
+          <TabsTrigger value="roles">Custom Role Permission Matrix</TabsTrigger>
         </TabsList>
 
         <TabsContent value="roles" className="space-y-6">
@@ -507,7 +506,7 @@ export default function RoleManagement() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
-                System Role Permission ({roles.length})
+                Custom Role Permission Matrix ({roles.length})
               </CardTitle>
               <CardDescription>
                 Manage roles and their detailed function permissions
@@ -604,14 +603,11 @@ export default function RoleManagement() {
                                          <SelectItem value="full">Full Access</SelectItem>
                                        </SelectContent>
                                      </Select>
-                                   ) : (
-                                     <Badge variant={hasPermission ? "default" : "outline"} className="text-xs">
-                                       <div className="flex items-center gap-1">
-                                         {hasPermission ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-                                         {hasPermission ? "Full Access" : "No Access"}
-                                       </div>
-                                     </Badge>
-                                   )}
+                                    ) : (
+                                      <div className="flex justify-center">
+                                        {hasPermission ? <Check className="h-4 w-4 text-green-500" /> : <X className="h-4 w-4 text-red-500" />}
+                                      </div>
+                                    )}
                                  </div>
                                );
                              })}
@@ -642,91 +638,6 @@ export default function RoleManagement() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="assignments" className="space-y-6">
-          {/* Staff Role Assignments */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Staff Role Assignments ({staff.length})
-              </CardTitle>
-              <CardDescription>
-                Manage role assignments for all staff members
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Staff Name</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Employment Type</TableHead>
-                      <TableHead>Assigned Role</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {staff.map((member) => (
-                      <TableRow key={member.id}>
-                        <TableCell className="font-medium">{member.fullName}</TableCell>
-                        <TableCell>{member.department}</TableCell>
-                        <TableCell>
-                          <Badge variant={member.employmentType === "Full-Time" ? "default" : "secondary"}>
-                            {member.employmentType}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {editingStaffRole === member.id ? (
-                            <div className="flex items-center gap-2">
-                              <Select 
-                                value={member.roleId || ""} 
-                                onValueChange={(value) => handleStaffRoleChange(member.id, value)}
-                              >
-                                <SelectTrigger className="w-40">
-                                  <SelectValue placeholder="Select role" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {roles.map((role) => (
-                                    <SelectItem key={role.id} value={role.id}>
-                                      {role.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setEditingStaffRole(null)}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          ) : (
-                            <div 
-                              className="flex items-center gap-2 cursor-pointer"
-                              onClick={() => setEditingStaffRole(member.id)}
-                            >
-                              <span 
-                                className={`px-2 py-1 rounded text-xs font-medium ${
-                                  member.roleId 
-                                    ? getRoleColor(roles.find(r => r.id === member.roleId)?.name || "")
-                                    : "bg-muted text-muted-foreground"
-                                }`}
-                              >
-                                {member.roleId ? roles.find(r => r.id === member.roleId)?.name : "No Role"}
-                              </span>
-                              <Edit className="h-3 w-3 text-muted-foreground" />
-                            </div>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
 
       {/* Create Role Form Modal */}

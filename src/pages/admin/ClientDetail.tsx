@@ -168,6 +168,7 @@ export default function ClientDetail() {
                    <TableHead>Email</TableHead>
                    <TableHead>Sales PIC</TableHead>
                    <TableHead>Project</TableHead>
+                   <TableHead>Status</TableHead>
                    <TableHead>Actions</TableHead>
                  </TableRow>
                </TableHeader>
@@ -175,34 +176,39 @@ export default function ClientDetail() {
                 {clientPOCs.map((poc) => {
                   const salesPerson = salesStaff.find(staff => staff.id === poc.salesPIC);
                   return (
-                    <TableRow key={poc.id}>
-                      <TableCell className="font-medium">{poc.contactName}</TableCell>
-                      <TableCell>{poc.contactNumber}</TableCell>
-                      <TableCell>{poc.contactEmail}</TableCell>
-                      <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
-                      <TableCell>
-                        {poc.projectName ? (
-                          <div className="space-y-1">
-                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                              {poc.projectName}
-                            </Badge>
-                            {poc.projectType && (
-                              <div className="text-xs text-muted-foreground">{poc.projectType}</div>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">No project</span>
-                        )}
-                       </TableCell>
+                     <TableRow key={poc.id}>
+                       <TableCell className="font-medium">{poc.contactName}</TableCell>
+                       <TableCell>{poc.contactNumber}</TableCell>
+                       <TableCell>{poc.contactEmail}</TableCell>
+                       <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
                        <TableCell>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditPOC(poc)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+                         {poc.projectName ? (
+                           <div className="space-y-1">
+                             <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                               {poc.projectName}
+                             </Badge>
+                             {poc.projectType && (
+                               <div className="text-xs text-muted-foreground">{poc.projectType}</div>
+                             )}
+                           </div>
+                         ) : (
+                           <span className="text-muted-foreground text-sm">No project</span>
+                         )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={poc.projectStatus === "Active" ? "default" : "secondary"}>
+                            {poc.projectStatus}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                         <Button 
+                           variant="ghost" 
+                           size="sm"
+                           onClick={() => handleEditPOC(poc)}
+                         >
+                           <Edit className="h-4 w-4" />
+                         </Button>
+                       </TableCell>
                     </TableRow>
                   );
                 })}

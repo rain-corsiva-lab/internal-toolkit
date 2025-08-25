@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, Download, Edit, Eye } from "lucide-react";
-import { mockStaff } from "@/data/mockData";
+import { mockStaff, mockRoles } from "@/data/mockData";
 import { Staff, StaffFilters } from "@/types/admin";
 import AddStaffForm from "@/components/admin/AddStaffForm";
 import { useToast } from "@/hooks/use-toast";
@@ -160,51 +160,60 @@ export default function StaffManagement() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Joined Date</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Employment Type</TableHead>
-                  <TableHead>Country</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
+                 <TableRow>
+                   <TableHead>Name</TableHead>
+                   <TableHead>Email</TableHead>
+                   <TableHead>Role</TableHead>
+                   <TableHead>Joined Date</TableHead>
+                   <TableHead>Department</TableHead>
+                   <TableHead>Employment Type</TableHead>
+                   <TableHead>Country</TableHead>
+                   <TableHead>Actions</TableHead>
+                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStaff.map((member) => (
-                  <TableRow key={member.id}>
-                    <TableCell className="font-medium">{member.fullName}</TableCell>
-                    <TableCell>{member.phoneNumber}</TableCell>
-                    <TableCell>{member.workEmail}</TableCell>
-                    <TableCell>{formatDate(member.joinedDate)}</TableCell>
-                    <TableCell>{member.department}</TableCell>
-                    <TableCell>
-                      <Badge variant={getEmploymentTypeBadge(member.employmentType)}>
-                        {member.employmentType}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{member.country}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedStaff(member)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditStaff(member.id)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                 {filteredStaff.map((member) => {
+                   const memberRole = mockRoles.find(role => role.id === member.roleId);
+                   return (
+                     <TableRow key={member.id}>
+                       <TableCell className="font-medium">{member.fullName}</TableCell>
+                       <TableCell>{member.workEmail}</TableCell>
+                       <TableCell>
+                         {memberRole ? (
+                           <Badge variant="outline">{memberRole.name}</Badge>
+                         ) : (
+                           <span className="text-muted-foreground text-sm">No role assigned</span>
+                         )}
+                       </TableCell>
+                       <TableCell>{formatDate(member.joinedDate)}</TableCell>
+                       <TableCell>{member.department}</TableCell>
+                       <TableCell>
+                         <Badge variant={getEmploymentTypeBadge(member.employmentType)}>
+                           {member.employmentType}
+                         </Badge>
+                       </TableCell>
+                       <TableCell>{member.country}</TableCell>
+                       <TableCell>
+                         <div className="flex items-center gap-2">
+                           <Button
+                             variant="ghost"
+                             size="sm"
+                             onClick={() => setSelectedStaff(member)}
+                           >
+                             <Eye className="h-4 w-4" />
+                           </Button>
+                           <Button 
+                             variant="ghost" 
+                             size="sm"
+                             onClick={() => handleEditStaff(member.id)}
+                           >
+                             <Edit className="h-4 w-4" />
+                           </Button>
+                         </div>
+                       </TableCell>
+                     </TableRow>
+                   );
+                 })}
               </TableBody>
             </Table>
           </div>
