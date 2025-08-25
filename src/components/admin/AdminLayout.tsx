@@ -15,9 +15,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { name: "Staff Management", href: "/admin/staff", icon: Users },
-  { name: "Role Management", href: "/admin/roles", icon: Shield },
-  { name: "Client Management", href: "/admin/clients", icon: Building2 },
+  { name: "Staff Management", href: "/staff", icon: Users },
+  { name: "Role Management", href: "/roles", icon: Shield },
+  { name: "Client Management", href: "/clients", icon: Building2 },
 ];
 
 export default function AdminLayout() {
@@ -65,7 +65,7 @@ export default function AdminLayout() {
           <nav className="flex-1 space-y-2 p-4">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href || 
-                (item.href !== "/admin" && location.pathname.startsWith(item.href));
+                (item.href !== "/" && location.pathname.startsWith(item.href));
               
               return (
                 <NavLink
@@ -112,7 +112,7 @@ export default function AdminLayout() {
             <h2 className="text-lg font-semibold">
               {navigation.find(item => 
                 location.pathname === item.href || 
-                (item.href !== "/admin" && location.pathname.startsWith(item.href))
+                (item.href !== "/" && location.pathname.startsWith(item.href))
               )?.name || "Dashboard"}
             </h2>
           </div>
@@ -128,7 +128,7 @@ export default function AdminLayout() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate("/admin/profile")}>
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <User className="mr-2 h-4 w-4" />
                   Profile
                 </DropdownMenuItem>
