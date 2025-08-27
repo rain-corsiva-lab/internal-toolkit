@@ -116,12 +116,6 @@ export default function Login() {
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
-          
-          <div className="mt-6 text-center">
-            <Button variant="link" className="text-sm text-muted-foreground">
-              Forgot your password?
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>
