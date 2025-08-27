@@ -13,7 +13,7 @@ import { Client, ClientPOC, ClientFilters, POCFilters } from "@/types/admin";
 import AddClientForm from "@/components/admin/AddClientForm";
 import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
 import EditClientForm from "@/components/admin/EditClientForm";
-import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
+import EditClientPOCFormFull from "@/components/admin/EditClientPOCFormFull";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -481,7 +481,7 @@ export default function ClientManagement() {
 
       {/* Edit POC Form */}
       {showEditPOCForm && selectedPOC && (
-        <EditClientPOCForm 
+        <EditClientPOCFormFull 
           poc={selectedPOC}
           onClose={() => {
             setShowEditPOCForm(false);

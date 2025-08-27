@@ -513,14 +513,8 @@ export default function RoleManagement() {
         </Button>
       </div>
 
-      <Tabs defaultValue="roles" className="w-full">
-        <TabsList className="grid w-full grid-cols-1">
-          <TabsTrigger value="roles">Custom Role Permission Matrix</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="roles" className="space-y-6">
-          {/* System Role Permission with Detailed Functions */}
-          <Card>
+      {/* System Role Permission with Detailed Functions */}
+      <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
@@ -658,9 +652,6 @@ export default function RoleManagement() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-      </Tabs>
 
       {/* Create Role Form Modal */}
       {showCreateRoleForm && <CreateRoleForm />}
