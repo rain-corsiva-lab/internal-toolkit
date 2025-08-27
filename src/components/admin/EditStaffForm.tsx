@@ -4,33 +4,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 import { Staff } from "@/types/admin";
 import { mockRoles, mockStaff } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 
-interface AddStaffFormProps {
+interface EditStaffFormProps {
+  staff: Staff;
   onClose: () => void;
-  onSubmit: (staff: Staff) => void;
+  onUpdate: (staff: Staff) => void;
+  onDelete: (staffId: string) => void;
 }
 
-export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
+export default function EditStaffForm({ staff, onClose, onUpdate, onDelete }: EditStaffFormProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    address: "",
-    workEmail: "",
-    country: "",
-    department: "",
-    employmentType: "",
-    designation: "",
-    joinedDate: "",
-    otApproverEmail: "",
-    leaveApproverEmail: "",
-    roleId: "",
-    allowance: "",
-    grossSalary: ""
+    fullName: staff.fullName,
+    phoneNumber: staff.phoneNumber,
+    address: staff.address,
+    workEmail: staff.workEmail,
+    country: staff.country,
+    department: staff.department,
+    employmentType: staff.employmentType,
+    designation: staff.designation,
+    joinedDate: staff.joinedDate ? (() => {
+      // Handle DD/MM/YYYY format from mock data
+      if (staff.joinedDate.includes('/')) {
+        const [day, month, year] = staff.joinedDate.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      // Handle ISO format
+      return staff.joinedDate.split('T')[0];
+    })() : "",
+    otApproverEmail: staff.otApproverEmail || "",
+    leaveApproverEmail: staff.leaveApproverEmail || "",
+    roleId: staff.roleId || "",
+    allowance: staff.allowance || "",
+    grossSalary: staff.grossSalary || ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -45,31 +55,39 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
       return;
     }
 
-    const newStaff: Staff = {
-      id: `staff_${Date.now()}`,
+    const updatedStaff: Staff = {
+      ...staff,
       fullName: formData.fullName,
       phoneNumber: formData.phoneNumber,
       address: formData.address,
       workEmail: formData.workEmail,
       country: formData.country as Staff["country"],
-      joinedDate: formData.joinedDate,
       department: formData.department as Staff["department"],
       employmentType: formData.employmentType as Staff["employmentType"],
       designation: formData.designation,
+      joinedDate: formData.joinedDate,
       otApproverEmail: formData.otApproverEmail || undefined,
       leaveApproverEmail: formData.leaveApproverEmail || undefined,
-      isDeleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
       roleId: formData.roleId,
       allowance: formData.allowance || undefined,
-      grossSalary: formData.grossSalary || undefined
+      grossSalary: formData.grossSalary || undefined,
+      updatedAt: new Date().toISOString()
     };
 
-    onSubmit(newStaff);
+    onUpdate(updatedStaff);
     toast({
       title: "Success",
-      description: "Staff member added successfully",
+      description: "Staff member updated successfully",
+    });
+    onClose();
+  };
+
+  const handleDelete = () => {
+    onDelete(staff.id);
+    toast({
+      title: "Staff Deleted",
+      description: `${formData.fullName} has been successfully deleted.`,
+      variant: "destructive",
     });
     onClose();
   };
@@ -80,8 +98,8 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Add New Staff</CardTitle>
-              <CardDescription>Add a new employee to the system</CardDescription>
+              <CardTitle>Edit Staff Member</CardTitle>
+              <CardDescription>Update employee information</CardDescription>
             </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -127,7 +145,7 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="country">Country *</Label>
-                <Select value={formData.country} onValueChange={(value) => setFormData({ ...formData, country: value })}>
+                <Select value={formData.country} onValueChange={(value) => setFormData({ ...formData, country: value as Staff["country"] })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select country" />
                   </SelectTrigger>
@@ -142,7 +160,7 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="department">Department *</Label>
-                <Select value={formData.department} onValueChange={(value) => setFormData({ ...formData, department: value })}>
+                <Select value={formData.department} onValueChange={(value) => setFormData({ ...formData, department: value as Staff["department"] })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
@@ -159,7 +177,7 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="employmentType">Employment Type *</Label>
-                <Select value={formData.employmentType} onValueChange={(value) => setFormData({ ...formData, employmentType: value })}>
+                <Select value={formData.employmentType} onValueChange={(value) => setFormData({ ...formData, employmentType: value as Staff["employmentType"] })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select employment type" />
                   </SelectTrigger>
@@ -227,9 +245,9 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
                     <SelectValue placeholder="Select leave approver" />
                   </SelectTrigger>
                   <SelectContent>
-                    {mockStaff.filter(s => !s.isDeleted).map((staff) => (
-                      <SelectItem key={staff.id} value={staff.workEmail}>
-                        {staff.fullName} - {staff.workEmail}
+                    {mockStaff.filter(s => !s.isDeleted && s.id !== staff.id).map((staffMember) => (
+                      <SelectItem key={staffMember.id} value={staffMember.workEmail}>
+                        {staffMember.fullName} - {staffMember.workEmail}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -285,13 +303,19 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
+            <div className="flex justify-between items-center pt-4">
+              <Button type="button" variant="destructive" onClick={handleDelete}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Staff
               </Button>
-              <Button type="submit">
-                Add Staff
-              </Button>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  Save Changes
+                </Button>
+              </div>
             </div>
           </form>
         </CardContent>

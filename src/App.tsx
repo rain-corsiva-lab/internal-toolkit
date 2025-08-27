@@ -10,7 +10,7 @@ import RoleManagement from "./pages/admin/RoleManagement";
 import ClientManagement from "./pages/admin/ClientManagement";
 import ClientDetail from "./pages/admin/ClientDetail";
 import Profile from "./pages/admin/Profile";
-import EditStaff from "./pages/admin/EditStaff";
+
 
 const queryClient = new QueryClient();
 
@@ -23,7 +23,7 @@ const App = () => (
         <Route path="/" element={<AdminLayout />}>
           <Route index element={<StaffManagement />} />
           <Route path="staff" element={<StaffManagement />} />
-          <Route path="staff/edit/:id" element={<EditStaff />} />
+          
           <Route path="roles" element={<RoleManagement />} />
           <Route path="clients" element={<ClientManagement />} />
           <Route path="clients/:id" element={<ClientDetail />} />
