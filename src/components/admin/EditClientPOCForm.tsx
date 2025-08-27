@@ -188,29 +188,32 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                   
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="space-y-2">
-                      <Label>Phone Number</Label>
+                      <Label>Phone Number *</Label>
                       <Input
                         value={contactSet.phoneNumber}
                         onChange={(e) => updateContactSet(contactSet.id, "phoneNumber", e.target.value)}
                         placeholder="Enter phone number"
+                        required
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Email</Label>
+                      <Label>Email *</Label>
                       <Input
                         type="email"
                         value={contactSet.email}
                         onChange={(e) => updateContactSet(contactSet.id, "email", e.target.value)}
                         placeholder="Enter email"
+                        required
                       />
                     </div>
 
                      <div className="space-y-2">
-                       <Label>Company</Label>
+                       <Label>Company *</Label>
                        <Select 
                          value={contactSet.company} 
                          onValueChange={(value) => updateContactSet(contactSet.id, "company", value)}
+                         required
                        >
                          <SelectTrigger>
                            <SelectValue placeholder="Select company" />
@@ -226,10 +229,11 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                      </div>
 
                     <div className="space-y-2">
-                      <Label>POC Status</Label>
+                      <Label>POC Status *</Label>
                       <Select 
                         value={contactSet.status} 
                         onValueChange={(value) => updateContactSet(contactSet.id, "status", value)}
+                        required
                       >
                         <SelectTrigger>
                           <SelectValue />

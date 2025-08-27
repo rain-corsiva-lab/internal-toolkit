@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowLeft, Building2, Users, MapPin, Phone, Mail, Edit } from "lucide-react";
 import { getClientById, getClientPOCsByClient, getSalesStaff } from "@/data/mockData";
 import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
+import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
 import EditClientForm from "@/components/admin/EditClientForm";
 import { useToast } from "@/hooks/use-toast";
 import { ClientPOC, Client } from "@/types/admin";
@@ -21,6 +22,7 @@ export default function ClientDetail() {
   const [clientPOCs, setClientPOCs] = useState(getClientPOCsByClient(id || ""));
   const [selectedPOC, setSelectedPOC] = useState<ClientPOC | null>(null);
   const [showEditPOCForm, setShowEditPOCForm] = useState(false);
+  const [showAddPOCForm, setShowAddPOCForm] = useState(false);
   const [showEditClientForm, setShowEditClientForm] = useState(false);
   
   const salesStaff = getSalesStaff();
@@ -64,6 +66,14 @@ export default function ClientDetail() {
     toast({
       title: "Success",
       description: "Company updated successfully",
+    });
+  };
+
+  const handleAddPOC = (newPOC: ClientPOC) => {
+    setClientPOCs([...clientPOCs, newPOC]);
+    toast({
+      title: "Success",
+      description: "POC created successfully",
     });
   };
 
@@ -171,13 +181,21 @@ export default function ClientDetail() {
       {/* Points of Contact */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Points of Contact ({clientPOCs.length})
-          </CardTitle>
-          <CardDescription>
-            All contacts associated with this company
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Points of Contact ({clientPOCs.length})
+              </CardTitle>
+              <CardDescription>
+                All contacts associated with this company
+              </CardDescription>
+            </div>
+            <Button onClick={() => setShowAddPOCForm(true)}>
+              <Users className="h-4 w-4 mr-2" />
+              Create POC
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -243,6 +261,15 @@ export default function ClientDetail() {
             setSelectedPOC(null);
           }}
           onSave={handleUpdatePOC}
+        />
+      )}
+
+      {/* Add POC Form */}
+      {showAddPOCForm && (
+        <AddClientPOCForm 
+          onClose={() => setShowAddPOCForm(false)}
+          onAdd={handleAddPOC}
+          preselectedClientId={id}
         />
       )}
 
