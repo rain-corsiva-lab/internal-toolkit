@@ -9,6 +9,7 @@ import { Plus, Search, Download, Edit, Eye } from "lucide-react";
 import { mockStaff, mockRoles } from "@/data/mockData";
 import { Staff, StaffFilters } from "@/types/admin";
 import AddStaffForm from "@/components/admin/AddStaffForm";
+import EditStaffForm from "@/components/admin/EditStaffForm";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -19,6 +20,7 @@ export default function StaffManagement() {
   const [filters, setFilters] = useState<StaffFilters>({});
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
 
   // Filter staff based on current filters
   const filteredStaff = staff.filter(member => {
@@ -72,7 +74,15 @@ export default function StaffManagement() {
   };
 
   const handleEditStaff = (staffId: string) => {
-    navigate(`/admin/staff/edit/${staffId}`);
+    const staffToEdit = staff.find(s => s.id === staffId);
+    if (staffToEdit) {
+      setEditingStaff(staffToEdit);
+    }
+  };
+
+  const handleUpdateStaff = (updatedStaff: Staff) => {
+    setStaff(staff.map(s => s.id === updatedStaff.id ? updatedStaff : s));
+    setEditingStaff(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -225,6 +235,15 @@ export default function StaffManagement() {
         <AddStaffForm
           onClose={() => setShowAddForm(false)}
           onSubmit={handleAddStaff}
+        />
+      )}
+
+      {/* Edit Staff Form Modal */}
+      {editingStaff && (
+        <EditStaffForm
+          staff={editingStaff}
+          onClose={() => setEditingStaff(null)}
+          onSubmit={handleUpdateStaff}
         />
       )}
 
