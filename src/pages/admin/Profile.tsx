@@ -21,6 +21,8 @@ const currentUser = {
   designation: "CEO",
   leaveApproverEmail: "board@company.com",
   otApproverEmail: "hr@company.com",
+  allowance: "SGD 1,500",
+  grossSalary: "SGD 12,000",
   createdAt: "2023-01-15T09:00:00Z",
   updatedAt: "2024-01-08T14:30:00Z"
 };
@@ -180,6 +182,26 @@ export default function Profile() {
               <Input 
                 id="otApproverEmail" 
                 value={currentUser.otApproverEmail || "N/A"} 
+                disabled 
+                className="bg-muted text-muted-foreground"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="allowance">Allowance</Label>
+              <Input 
+                id="allowance" 
+                value={currentUser.allowance || "N/A"} 
+                disabled 
+                className="bg-muted text-muted-foreground"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="grossSalary">Gross Salary</Label>
+              <Input 
+                id="grossSalary" 
+                value={currentUser.grossSalary || "N/A"} 
                 disabled 
                 className="bg-muted text-muted-foreground"
               />

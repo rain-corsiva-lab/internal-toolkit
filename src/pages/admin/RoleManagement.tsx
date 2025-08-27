@@ -226,7 +226,7 @@ export default function RoleManagement() {
         { name: "Add Client", permission: "create" },
         { name: "View Client", permission: "read" },
         { name: "Edit Client", permission: "update" },
-        { name: "No Access", permission: "delete" },
+        { name: "Delete Client", permission: "delete" },
         { name: "Export Contacts", permission: "exportContacts" }
       ]
     }
@@ -351,53 +351,59 @@ export default function RoleManagement() {
             />
           </div>
           
-          <div className="space-y-4">
-            <h4 className="font-semibold">Permissions *</h4>
-            {permissionCategories.map(category => (
-              <div key={category.key} className="space-y-3">
-                <h5 className="font-medium text-sm">{category.name}</h5>
-                {category.subFunctions.map(subFunc => (
-                  <div key={subFunc.name} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="text-sm">{subFunc.name}</span>
-                    <Select 
-                      value={(() => {
-                        if (subFunc.permission === "exportContacts") {
-                          return newRolePermissions.exportContacts ? "full" : "none";
-                        } else {
-                          const categoryPerms = newRolePermissions[category.key as keyof typeof newRolePermissions];
-                          return categoryPerms[subFunc.permission as keyof typeof categoryPerms] ? "full" : "none";
-                        }
-                      })()}
-                      onValueChange={(value) => {
-                        if (subFunc.permission === "exportContacts") {
-                          setNewRolePermissions(prev => ({
-                            ...prev,
-                            exportContacts: value === "full"
-                          }));
-                        } else {
-                          setNewRolePermissions(prev => ({
-                            ...prev,
-                            [category.key]: {
-                              ...(prev[category.key as keyof typeof prev] as any),
-                              [subFunc.permission]: value === "full"
+            <div className="space-y-4">
+              <h4 className="font-semibold">Permissions *</h4>
+              {permissionCategories.map(category => (
+                <div key={category.key} className="space-y-3">
+                  <h5 className="font-medium text-sm">{category.name}</h5>
+                  {category.subFunctions.map(subFunc => (
+                    <div key={subFunc.name} className="flex items-center justify-between p-3 border rounded-lg">
+                      <span className="text-sm">{subFunc.name}</span>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={(() => {
+                            if (subFunc.permission === "exportContacts") {
+                              return newRolePermissions.exportContacts;
+                            } else {
+                              const categoryPerms = newRolePermissions[category.key as keyof typeof newRolePermissions];
+                              return categoryPerms[subFunc.permission as keyof typeof categoryPerms];
                             }
-                          }));
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No Access</SelectItem>
-                        <SelectItem value="full">Full Access</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+                          })()}
+                          onChange={(e) => {
+                            if (subFunc.permission === "exportContacts") {
+                              setNewRolePermissions(prev => ({
+                                ...prev,
+                                exportContacts: e.target.checked
+                              }));
+                            } else {
+                              setNewRolePermissions(prev => ({
+                                ...prev,
+                                [category.key]: {
+                                  ...(prev[category.key as keyof typeof prev] as any),
+                                  [subFunc.permission]: e.target.checked
+                                }
+                              }));
+                            }
+                          }}
+                          className="rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <label className="text-sm font-medium">
+                          {(() => {
+                            if (subFunc.permission === "exportContacts") {
+                              return newRolePermissions.exportContacts ? "Enabled" : "Disabled";
+                            } else {
+                              const categoryPerms = newRolePermissions[category.key as keyof typeof newRolePermissions];
+                              return categoryPerms[subFunc.permission as keyof typeof categoryPerms] ? "Enabled" : "Disabled";
+                            }
+                          })()}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
           
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowCreateRoleForm(false)}>

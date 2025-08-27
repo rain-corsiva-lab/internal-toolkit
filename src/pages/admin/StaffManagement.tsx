@@ -33,6 +33,7 @@ export default function StaffManagement() {
     if (filters.country && member.country !== filters.country) return false;
     if (filters.department && member.department !== filters.department) return false;
     if (filters.employmentType && member.employmentType !== filters.employmentType) return false;
+    if (filters.roleId && member.roleId !== filters.roleId) return false;
     return true;
   });
 
@@ -112,7 +113,7 @@ export default function StaffManagement() {
           <CardTitle>Search & Filter</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -148,6 +149,20 @@ export default function StaffManagement() {
                 <SelectItem value="Design Team">Design Team</SelectItem>
                 <SelectItem value="Development Team">Development Team</SelectItem>
                 <SelectItem value="Maintenance Team">Maintenance Team</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filters.roleId || "all"} onValueChange={(value) => setFilters({ ...filters, roleId: value === "all" ? undefined : value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Filter by Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                {mockRoles.map((role) => (
+                  <SelectItem key={role.id} value={role.id}>
+                    {role.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 

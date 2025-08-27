@@ -93,6 +93,7 @@ export interface StaffFilters {
   country?: string;
   department?: string;
   employmentType?: string;
+  roleId?: string;
   search?: string;
 }
 

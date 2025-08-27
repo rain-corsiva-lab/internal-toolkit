@@ -36,7 +36,7 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.fullName || !formData.phoneNumber || !formData.workEmail || !formData.country || !formData.department || !formData.employmentType || !formData.joinedDate) {
+    if (!formData.fullName || !formData.phoneNumber || !formData.workEmail || !formData.country || !formData.department || !formData.employmentType || !formData.joinedDate || !formData.roleId || !formData.address || !formData.designation) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -173,12 +173,13 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="designation">Designation</Label>
+                <Label htmlFor="designation">Designation *</Label>
                 <Input
                   id="designation"
                   value={formData.designation}
                   onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                   placeholder="Enter designation"
+                  required
                 />
               </div>
 
@@ -194,8 +195,8 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="role">Assigned Role</Label>
-                <Select value={formData.roleId} onValueChange={(value) => setFormData({ ...formData, roleId: value })}>
+                <Label htmlFor="role">Assigned Role *</Label>
+                <Select value={formData.roleId} onValueChange={(value) => setFormData({ ...formData, roleId: value })} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
@@ -276,12 +277,13 @@ export default function AddStaffForm({ onClose, onSubmit }: AddStaffFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">Address *</Label>
               <Input
                 id="address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 placeholder="Enter address"
+                required
               />
             </div>
 
