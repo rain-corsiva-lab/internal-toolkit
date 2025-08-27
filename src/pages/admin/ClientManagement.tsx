@@ -266,7 +266,7 @@ export default function ClientManagement() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => navigate(`/admin/clients/${client.id}`)}
+                              onClick={() => navigate(`/clients/${client.id}`)}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -365,13 +365,13 @@ export default function ClientManagement() {
                            <TableCell>{poc.contactNumber}</TableCell>
                            <TableCell>{poc.contactEmail}</TableCell>
                            <TableCell>
-                             <Button
-                               variant="link"
-                               className="p-0 h-auto font-normal text-blue-600 hover:text-blue-800"
-                               onClick={() => navigate(`/admin/clients/${poc.clientId}`)}
-                             >
-                               {client?.companyName || "Unknown"}
-                             </Button>
+                              <Button
+                                variant="link"
+                                className="p-0 h-auto font-normal text-blue-600 hover:text-blue-800"
+                                onClick={() => navigate(`/clients/${poc.clientId}`)}
+                              >
+                                {client?.companyName || "Unknown"}
+                              </Button>
                            </TableCell>
                            <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
                            <TableCell>
