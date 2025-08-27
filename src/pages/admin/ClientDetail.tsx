@@ -8,18 +8,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Building2, Users, MapPin, Phone, Mail, Edit } from "lucide-react";
 import { getClientById, getClientPOCsByClient, getSalesStaff } from "@/data/mockData";
 import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
+import EditClientForm from "@/components/admin/EditClientForm";
 import { useToast } from "@/hooks/use-toast";
-import { ClientPOC } from "@/types/admin";
+import { ClientPOC, Client } from "@/types/admin";
 
 export default function ClientDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const client = getClientById(id || "");
+  const [client, setClient] = useState(getClientById(id || ""));
   const [clientPOCs, setClientPOCs] = useState(getClientPOCsByClient(id || ""));
   const [selectedPOC, setSelectedPOC] = useState<ClientPOC | null>(null);
   const [showEditPOCForm, setShowEditPOCForm] = useState(false);
+  const [showEditClientForm, setShowEditClientForm] = useState(false);
   
   const salesStaff = getSalesStaff();
 
@@ -57,6 +59,14 @@ export default function ClientDetail() {
     });
   };
 
+  const handleUpdateClient = (updatedClient: Client) => {
+    setClient(updatedClient);
+    toast({
+      title: "Success",
+      description: "Company updated successfully",
+    });
+  };
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
@@ -68,12 +78,19 @@ export default function ClientDetail() {
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-3xl font-bold tracking-tight">{client.companyName}</h1>
           <p className="text-muted-foreground">
             Complete company profile and contact information
           </p>
         </div>
+        <Button 
+          onClick={() => setShowEditClientForm(true)}
+          className="shrink-0"
+        >
+          <Edit className="h-4 w-4 mr-2" />
+          Edit Company
+        </Button>
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
@@ -250,6 +267,15 @@ export default function ClientDetail() {
             setSelectedPOC(null);
           }}
           onSave={handleUpdatePOC}
+        />
+      )}
+
+      {/* Edit Client Form */}
+      {showEditClientForm && client && (
+        <EditClientForm 
+          client={client}
+          onClose={() => setShowEditClientForm(false)}
+          onSave={handleUpdateClient}
         />
       )}
     </div>
