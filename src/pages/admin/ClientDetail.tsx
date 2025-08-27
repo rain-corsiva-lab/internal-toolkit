@@ -1,10 +1,10 @@
+
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Building2, Users, MapPin, Phone, Mail, Edit } from "lucide-react";
 import { getClientById, getClientPOCsByClient, getSalesStaff } from "@/data/mockData";
 import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
@@ -93,170 +93,146 @@ export default function ClientDetail() {
         </Button>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="overview">Company Overview</TabsTrigger>
-          <TabsTrigger value="contacts">Points of Contact</TabsTrigger>
-        </TabsList>
+      {/* Company Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-5 w-5" />
+            Company Information
+          </CardTitle>
+          <CardDescription>
+            Basic company details and registration information
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Company Name</label>
+              <p className="text-sm text-muted-foreground">{client.companyName}</p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Registration Number</label>
+              <p className="text-sm text-muted-foreground">{client.registrationNumber}</p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Country</label>
+              <p className="text-sm text-muted-foreground">{client.country}</p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Industry</label>
+              <p className="text-sm text-muted-foreground">{client.industry}</p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Number of Projects</label>
+              <Badge variant="outline">{client.numberOfProjects}</Badge>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Last Updated</label>
+              <p className="text-sm text-muted-foreground">
+                {new Date(client.updatedAt).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <TabsContent value="overview" className="space-y-6">
-          {/* Company Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                Company Information
-              </CardTitle>
-              <CardDescription>
-                Basic company details and registration information
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Company Name</label>
-                  <p className="text-sm text-muted-foreground">{client.companyName}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Registration Number</label>
-                  <p className="text-sm text-muted-foreground">{client.registrationNumber}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Country</label>
-                  <p className="text-sm text-muted-foreground">{client.country}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Industry</label>
-                  <p className="text-sm text-muted-foreground">{client.industry}</p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Number of Projects</label>
-                  <Badge variant="outline">{client.numberOfProjects}</Badge>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Last Updated</label>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(client.updatedAt).toLocaleDateString()}
-                  </p>
-                </div>
+      {/* Addresses */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Addresses
+          </CardTitle>
+          <CardDescription>
+            Company registered and operational addresses
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {mainAddress && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="default">Main Address</Badge>
               </div>
-            </CardContent>
-          </Card>
+              <p className="text-sm text-muted-foreground">{mainAddress.address}</p>
+            </div>
+          )}
+          
+          {otherAddresses.map((address) => (
+            <div key={address.id} className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">Other Address</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">{address.address}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
-          {/* Addresses */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Addresses
-              </CardTitle>
-              <CardDescription>
-                Company registered and operational addresses
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {mainAddress && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="default">Main Address</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{mainAddress.address}</p>
-                </div>
-              )}
-              
-              {otherAddresses.map((address) => (
-                <div key={address.id} className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">Other Address</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{address.address}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="contacts" className="space-y-6">
-          {/* Points of Contact */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Points of Contact ({clientPOCs.length})
-              </CardTitle>
-              <CardDescription>
-                All contacts associated with this company
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Contact Name</TableHead>
-                      <TableHead>Designation</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Sales PIC</TableHead>
-                      <TableHead>Project Status</TableHead>
-                      <TableHead>Project Details</TableHead>
-                      <TableHead>Actions</TableHead>
+      {/* Points of Contact */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Points of Contact ({clientPOCs.length})
+          </CardTitle>
+          <CardDescription>
+            All contacts associated with this company
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Contact Name</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Sales PIC</TableHead>
+                  <TableHead>POC Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {clientPOCs.map((poc) => {
+                  const salesPerson = salesStaff.find(staff => staff.id === poc.salesPIC);
+                  return (
+                    <TableRow key={poc.id}>
+                      <TableCell className="font-medium">{poc.contactName}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-muted-foreground" />
+                          {poc.contactNumber}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-muted-foreground" />
+                          {poc.contactEmail}
+                        </div>
+                      </TableCell>
+                      <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
+                      <TableCell>
+                        <Badge variant={getStatusBadge(poc.projectStatus)}>
+                          {poc.projectStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleEditPOC(poc)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {clientPOCs.map((poc) => {
-                      const salesPerson = salesStaff.find(staff => staff.id === poc.salesPIC);
-                      return (
-                        <TableRow key={poc.id}>
-                          <TableCell className="font-medium">{poc.contactName}</TableCell>
-                          <TableCell>{poc.designation}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Phone className="h-4 w-4 text-muted-foreground" />
-                              {poc.contactNumber}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Mail className="h-4 w-4 text-muted-foreground" />
-                              {poc.contactEmail}
-                            </div>
-                          </TableCell>
-                          <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
-                          <TableCell>
-                            <Badge variant={getStatusBadge(poc.projectStatus)}>
-                              {poc.projectStatus}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="space-y-1">
-                              {poc.projectName && (
-                                <div className="text-sm font-medium">{poc.projectName}</div>
-                              )}
-                              {poc.projectType && (
-                                <div className="text-xs text-muted-foreground">{poc.projectType}</div>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleEditPOC(poc)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Edit POC Form */}
       {showEditPOCForm && selectedPOC && (
