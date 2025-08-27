@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Building2, Users, MapPin, Phone, Mail, Edit } from "lucide-react";
+import { ArrowLeft, Building2, Users, MapPin, Phone, Mail, Edit, Trash2 } from "lucide-react";
 import { getClientById, getClientPOCsByClient, getSalesStaff } from "@/data/mockData";
 import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
 import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
@@ -77,6 +77,16 @@ export default function ClientDetail() {
     });
   };
 
+  const handleDeleteCompany = () => {
+    if (window.confirm("Are you sure you want to delete this company? This action cannot be undone.")) {
+      toast({
+        title: "Success",
+        description: "Company deleted successfully",
+      });
+      navigate("/clients");
+    }
+  };
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
@@ -94,13 +104,23 @@ export default function ClientDetail() {
             Complete company profile and contact information
           </p>
         </div>
-        <Button 
-          onClick={() => setShowEditClientForm(true)}
-          className="shrink-0"
-        >
-          <Edit className="h-4 w-4 mr-2" />
-          Edit Company
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => setShowEditClientForm(true)}
+            className="shrink-0"
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Edit Company
+          </Button>
+          <Button 
+            variant="destructive"
+            onClick={handleDeleteCompany}
+            className="shrink-0"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete Company
+          </Button>
+        </div>
       </div>
 
       {/* Company Information */}

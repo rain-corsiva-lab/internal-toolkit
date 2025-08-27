@@ -4,18 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Plus, Minus } from "lucide-react";
+import { X } from "lucide-react";
 import { ClientPOC } from "@/types/admin";
-import { getSalesStaff, mockClients } from "@/data/mockData";
+import { getSalesStaff } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
-
-interface ContactSet {
-  id: string;
-  phoneNumber: string;
-  email: string;
-  company: string;
-  status: "Active" | "Inactive";
-}
 
 interface EditClientPOCFormProps {
   poc: ClientPOC;
@@ -28,48 +20,17 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
   const [formData, setFormData] = useState({
     contactName: poc.contactName,
     salesPIC: poc.salesPIC,
+    phoneNumber: poc.contactNumber,
+    email: poc.contactEmail,
+    status: poc.projectStatus as "Active" | "Inactive"
   });
 
-  const [contactSets, setContactSets] = useState<ContactSet[]>([
-    {
-      id: "1",
-      phoneNumber: poc.contactNumber,
-      email: poc.contactEmail,
-      company: "Default Company", // You might want to get this from the client data
-      status: poc.projectStatus
-    }
-   ]);
-
-   const salesStaff = getSalesStaff();
-   const clients = mockClients;
-
-  const addContactSet = () => {
-    const newSet: ContactSet = {
-      id: Date.now().toString(),
-      phoneNumber: "",
-      email: "",
-      company: "",
-      status: "Active"
-    };
-    setContactSets([...contactSets, newSet]);
-  };
-
-  const removeContactSet = (id: string) => {
-    if (contactSets.length > 1) {
-      setContactSets(contactSets.filter(set => set.id !== id));
-    }
-  };
-
-  const updateContactSet = (id: string, field: keyof ContactSet, value: string) => {
-    setContactSets(contactSets.map(set => 
-      set.id === id ? { ...set, [field]: value } : set
-    ));
-  };
+  const salesStaff = getSalesStaff();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.contactName.trim() || !formData.salesPIC) {
+    if (!formData.contactName.trim() || !formData.salesPIC || !formData.phoneNumber.trim() || !formData.email.trim()) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -78,30 +39,13 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
       return;
     }
 
-    // Validate contact sets
-    const validContactSets = contactSets.filter(set => 
-      set.phoneNumber.trim() && set.email.trim() && set.company.trim()
-    );
-
-    if (validContactSets.length === 0) {
-      toast({
-        title: "Error",
-        description: "At least one complete contact set is required",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // For simplicity, use the first contact set for the main POC data
-    const primaryContact = validContactSets[0];
-    
     const updatedPOC: ClientPOC = {
       ...poc,
       contactName: formData.contactName,
       salesPIC: formData.salesPIC,
-      contactNumber: primaryContact.phoneNumber,
-      contactEmail: primaryContact.email,
-      projectStatus: primaryContact.status,
+      contactNumber: formData.phoneNumber,
+      contactEmail: formData.email,
+      projectStatus: formData.status,
       updatedAt: new Date().toISOString()
     };
 
@@ -130,7 +74,6 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* POC Name and Sales PIC */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="contactName">POC Name *</Label>
@@ -158,95 +101,42 @@ export default function EditClientPOCForm({ poc, onClose, onSave }: EditClientPO
                   </SelectContent>
                 </Select>
               </div>
-            </div>
 
-            {/* Contact Sets */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label className="text-lg font-semibold">Contact Information</Label>
-                <Button type="button" variant="outline" size="sm" onClick={addContactSet}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Contact Set
-                </Button>
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">Phone Number *</Label>
+                <Input
+                  id="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                  placeholder="Enter phone number"
+                  required
+                />
               </div>
 
-              {contactSets.map((contactSet, index) => (
-                <Card key={contactSet.id} className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium">Contact Set {index + 1}</h4>
-                    {contactSets.length > 1 && (
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => removeContactSet(contactSet.id)}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="space-y-2">
-                      <Label>Phone Number *</Label>
-                      <Input
-                        value={contactSet.phoneNumber}
-                        onChange={(e) => updateContactSet(contactSet.id, "phoneNumber", e.target.value)}
-                        placeholder="Enter phone number"
-                        required
-                      />
-                    </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="Enter email"
+                  required
+                />
+              </div>
 
-                    <div className="space-y-2">
-                      <Label>Email *</Label>
-                      <Input
-                        type="email"
-                        value={contactSet.email}
-                        onChange={(e) => updateContactSet(contactSet.id, "email", e.target.value)}
-                        placeholder="Enter email"
-                        required
-                      />
-                    </div>
-
-                     <div className="space-y-2">
-                       <Label>Company *</Label>
-                       <Select 
-                         value={contactSet.company} 
-                         onValueChange={(value) => updateContactSet(contactSet.id, "company", value)}
-                         required
-                       >
-                         <SelectTrigger>
-                           <SelectValue placeholder="Select company" />
-                         </SelectTrigger>
-                         <SelectContent>
-                           {clients.map(client => (
-                             <SelectItem key={client.id} value={client.companyName}>
-                               {client.companyName}
-                             </SelectItem>
-                           ))}
-                         </SelectContent>
-                       </Select>
-                     </div>
-
-                    <div className="space-y-2">
-                      <Label>POC Status *</Label>
-                      <Select 
-                        value={contactSet.status} 
-                        onValueChange={(value) => updateContactSet(contactSet.id, "status", value)}
-                        required
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Active">Active</SelectItem>
-                          <SelectItem value="Inactive">Inactive</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="status">POC Status *</Label>
+                <Select value={formData.status} onValueChange={(value: "Active" | "Inactive") => setFormData({ ...formData, status: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="flex justify-end gap-2">

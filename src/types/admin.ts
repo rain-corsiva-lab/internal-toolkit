@@ -31,18 +31,22 @@ export interface Role {
   createdAt: string;
 }
 
-export interface RolePermissions {
-  staff: CRUDPermissions;
-  roles: CRUDPermissions;
-  clients: CRUDPermissions;
-  exportContacts: boolean;
-}
-
 export interface CRUDPermissions {
   create: boolean;
   read: boolean;
   update: boolean;
   delete: boolean;
+}
+
+export interface ClientPermissions extends CRUDPermissions {
+  deletePOC: boolean;
+}
+
+export interface RolePermissions {
+  staff: CRUDPermissions;
+  roles: CRUDPermissions;
+  clients: ClientPermissions;
+  exportContacts: boolean;
 }
 
 export interface StaffRole {

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Shield, Check, X, Eye, Users, Edit, Trash2 } from "lucide-react";
 import { mockRoles, mockStaff } from "@/data/mockData";
-import { Role, Staff } from "@/types/admin";
+import { Role, Staff, RolePermissions } from "@/types/admin";
 import { useToast } from "@/hooks/use-toast";
 
 export default function RoleManagement() {
@@ -23,17 +23,17 @@ export default function RoleManagement() {
   const [editingStaffRole, setEditingStaffRole] = useState<string | null>(null);
   const [editingRolePermissions, setEditingRolePermissions] = useState<string | null>(null);
   const [newRoleName, setNewRoleName] = useState("");
-  const [newRolePermissions, setNewRolePermissions] = useState({
+  const [newRolePermissions, setNewRolePermissions] = useState<RolePermissions>({
     staff: { create: false, read: false, update: false, delete: false },
     roles: { create: false, read: false, update: false, delete: false },
-    clients: { create: false, read: false, update: false, delete: false },
+    clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
     exportContacts: false
   });
   const [editRoleName, setEditRoleName] = useState("");
-  const [editRolePermissions, setEditRolePermissions] = useState({
+  const [editRolePermissions, setEditRolePermissions] = useState<RolePermissions>({
     staff: { create: false, read: false, update: false, delete: false },
     roles: { create: false, read: false, update: false, delete: false },
-    clients: { create: false, read: false, update: false, delete: false },
+    clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
     exportContacts: false
   });
 
@@ -64,6 +64,7 @@ export default function RoleManagement() {
   };
 
   const getPermissionLevel = (permissions: any) => {
+    if (!permissions || typeof permissions !== 'object') return "none";
     const hasAll = permissions.create && permissions.read && permissions.update && permissions.delete;
     const hasRead = permissions.read && !permissions.create && !permissions.update && !permissions.delete;
     
@@ -85,7 +86,8 @@ export default function RoleManagement() {
           create: level === "full",
           read: level === "full" || level === "read",
           update: level === "full",
-          delete: level === "full"
+          delete: level === "full",
+          ...(module === "clients" && { deletePOC: level === "full" })
         }
       }));
     }
@@ -104,7 +106,8 @@ export default function RoleManagement() {
           create: level === "full",
           read: level === "full" || level === "read",
           update: level === "full",
-          delete: level === "full"
+          delete: level === "full",
+          ...(module === "clients" && { deletePOC: level === "full" })
         }
       }));
     }
@@ -139,7 +142,7 @@ export default function RoleManagement() {
     setEditRolePermissions({
       staff: { create: false, read: false, update: false, delete: false },
       roles: { create: false, read: false, update: false, delete: false },
-      clients: { create: false, read: false, update: false, delete: false },
+      clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
       exportContacts: false
     });
     setEditingRole(null);
@@ -174,7 +177,7 @@ export default function RoleManagement() {
     setNewRolePermissions({
       staff: { create: false, read: false, update: false, delete: false },
       roles: { create: false, read: false, update: false, delete: false },
-      clients: { create: false, read: false, update: false, delete: false },
+      clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
       exportContacts: false
     });
     setShowCreateRoleForm(false);
@@ -226,7 +229,8 @@ export default function RoleManagement() {
         { name: "Add Client", permission: "create" },
         { name: "View Client", permission: "read" },
         { name: "Edit Client", permission: "update" },
-        { name: "Delete Client", permission: "delete" },
+        { name: "Delete Company", permission: "delete" },
+        { name: "Delete Client POC", permission: "deletePOC" },
         { name: "Export Contacts", permission: "exportContacts" }
       ]
     }
@@ -283,7 +287,9 @@ export default function RoleManagement() {
                           hasPermission = role.permissions.exportContacts;
                         } else {
                           const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
-                          hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                          if (categoryPerms && typeof categoryPerms === 'object' && 'create' in categoryPerms) {
+                            hasPermission = (categoryPerms as any)[subFunc.permission];
+                          }
                         }
                         
                         return (
@@ -294,10 +300,10 @@ export default function RoleManagement() {
                                   value={hasPermission ? "full" : "none"}
                                   onValueChange={(value) => {
                                     const updatedPermissions = { ...role.permissions };
-                                    if (category.key === "exportContacts") {
+                                    if (subFunc.permission === "exportContacts") {
                                       updatedPermissions.exportContacts = value === "full";
                                     } else {
-                                      updatedPermissions[category.key as keyof typeof updatedPermissions][subFunc.permission as keyof any] = value === "full";
+                                      (updatedPermissions[category.key as keyof typeof updatedPermissions] as any)[subFunc.permission] = value === "full";
                                     }
                                     
                                     setRoles(roles.map(r => 
@@ -367,7 +373,10 @@ export default function RoleManagement() {
                               return newRolePermissions.exportContacts;
                             } else {
                               const categoryPerms = newRolePermissions[category.key as keyof typeof newRolePermissions];
-                              return categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                              if (categoryPerms && typeof categoryPerms === 'object' && 'create' in categoryPerms) {
+                                return (categoryPerms as any)[subFunc.permission];
+                              }
+                              return false;
                             }
                           })()}
                           onChange={(e) => {
@@ -394,7 +403,10 @@ export default function RoleManagement() {
                               return newRolePermissions.exportContacts ? "Enabled" : "Disabled";
                             } else {
                               const categoryPerms = newRolePermissions[category.key as keyof typeof newRolePermissions];
-                              return categoryPerms[subFunc.permission as keyof typeof categoryPerms] ? "Enabled" : "Disabled";
+                              if (categoryPerms && typeof categoryPerms === 'object' && 'create' in categoryPerms) {
+                                return (categoryPerms as any)[subFunc.permission] ? "Enabled" : "Disabled";
+                              }
+                              return "Disabled";
                             }
                           })()}
                         </label>
@@ -470,7 +482,7 @@ export default function RoleManagement() {
               setEditRolePermissions({
                 staff: { create: false, read: false, update: false, delete: false },
                 roles: { create: false, read: false, update: false, delete: false },
-                clients: { create: false, read: false, update: false, delete: false },
+                clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
                 exportContacts: false
               });
             }}>
@@ -575,10 +587,14 @@ export default function RoleManagement() {
                                  hasPermission = role.permissions.exportContacts;
                                } else if (category.key === "clients") {
                                  const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
-                                 hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                                 if (categoryPerms && typeof categoryPerms === 'object' && 'create' in categoryPerms) {
+                                   hasPermission = (categoryPerms as any)[subFunc.permission];
+                                 }
                                } else {
                                  const categoryPerms = role.permissions[category.key as keyof typeof role.permissions];
-                                 hasPermission = categoryPerms[subFunc.permission as keyof typeof categoryPerms];
+                                 if (categoryPerms && typeof categoryPerms === 'object' && 'create' in categoryPerms) {
+                                   hasPermission = (categoryPerms as any)[subFunc.permission];
+                                 }
                                }
                                
                                return (
@@ -671,12 +687,20 @@ export default function RoleManagement() {
                   <div key={module} className="space-y-3">
                     <h4 className="font-semibold capitalize">{module} Management</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                       {Object.entries(perms).map(([action, hasPermission]) => (
-                         <div key={action} className="flex items-center gap-2">
-                           {getPermissionIcon(hasPermission as boolean)}
-                           <span className="text-sm capitalize">{action}</span>
-                         </div>
-                       ))}
+                       {typeof perms === 'object' && perms !== null && 'create' in perms 
+                         ? Object.entries(perms).map(([action, hasPermission]) => (
+                             <div key={action} className="flex items-center gap-2">
+                               {getPermissionIcon(hasPermission as boolean)}
+                               <span className="text-sm capitalize">{action}</span>
+                             </div>
+                           ))
+                         : (
+                             <div className="flex items-center gap-2">
+                               {getPermissionIcon(perms as boolean)}
+                               <span className="text-sm capitalize">{module}</span>
+                             </div>
+                           )
+                       }
                     </div>
                   </div>
                 ))}
