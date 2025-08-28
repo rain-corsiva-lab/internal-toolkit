@@ -280,6 +280,22 @@ export default function AddClientForm({ onClose, onAdd, onAddClientPOC }: AddCli
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
+                  <Label htmlFor="pocSalesPIC">Sales PIC</Label>
+                  <Select value={pocData.salesPIC} onValueChange={(value) => setPocData({ ...pocData, salesPIC: value, name: "", email: "" })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select sales person" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {salesStaff.map(staff => (
+                        <SelectItem key={staff.id} value={staff.id}>
+                          {staff.fullName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="pocName">POC Name</Label>
                   {pocData.isNewName ? (
                     <div className="flex gap-2">
@@ -326,22 +342,6 @@ export default function AddClientForm({ onClose, onAdd, onAddClientPOC }: AddCli
                       </SelectContent>
                     </Select>
                   )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pocSalesPIC">Sales PIC</Label>
-                  <Select value={pocData.salesPIC} onValueChange={(value) => setPocData({ ...pocData, salesPIC: value, name: "", email: "" })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select sales person" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {salesStaff.map(staff => (
-                        <SelectItem key={staff.id} value={staff.id}>
-                          {staff.fullName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 </div>
 
                 <div className="space-y-2">

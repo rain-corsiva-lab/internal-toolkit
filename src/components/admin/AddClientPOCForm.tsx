@@ -9,7 +9,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { X, Check, ChevronsUpDown } from "lucide-react";
 import { ClientPOC } from "@/types/admin";
 import { useToast } from "@/hooks/use-toast";
-import { getSalesStaff, mockClients } from "@/data/mockData";
+import { getSalesStaff, mockClients, mockClientPOCs } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 
 interface AddClientPOCFormProps {
@@ -30,7 +30,8 @@ export default function AddClientPOCForm({ onClose, onAdd, preselectedClientId }
     designation: "",
     salesPIC: "",
     projectStatus: "Active" as "Active" | "Inactive",
-    clientId: preselectedClientId || ""
+    clientId: preselectedClientId || "",
+    isNewName: false
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -142,14 +143,73 @@ export default function AddClientPOCForm({ onClose, onAdd, preselectedClientId }
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="contactName">Contact Name *</Label>
-                <Input
-                  id="contactName"
-                  value={formData.contactName}
-                  onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                  placeholder="Enter contact name"
+                <Label htmlFor="salesPIC">Sales PIC *</Label>
+                <Select 
+                  value={formData.salesPIC} 
+                  onValueChange={(value) => setFormData({ ...formData, salesPIC: value, contactName: "", contactEmail: "" })}
                   required
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select sales person" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {salesStaff.map((staff) => (
+                      <SelectItem key={staff.id} value={staff.id}>
+                        {staff.fullName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="contactName">Contact Name *</Label>
+                {formData.isNewName ? (
+                  <div className="flex gap-2">
+                    <Input
+                      id="contactName"
+                      value={formData.contactName}
+                      onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+                      placeholder="Enter new contact name"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFormData({ ...formData, isNewName: false, contactName: "", contactEmail: "" })}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Select value={formData.contactName} onValueChange={(value) => {
+                    if (value === "add_new") {
+                      setFormData({ ...formData, isNewName: true, contactName: "", contactEmail: "" });
+                    } else {
+                      const existingPOC = mockClientPOCs.find(poc => poc.contactName === value && poc.salesPIC === formData.salesPIC);
+                      setFormData({ 
+                        ...formData, 
+                        contactName: value,
+                        contactEmail: existingPOC?.contactEmail || ""
+                      });
+                    }
+                  }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select existing POC or add new" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="add_new">Add New POC</SelectItem>
+                      {formData.salesPIC && mockClientPOCs
+                        .filter(poc => poc.salesPIC === formData.salesPIC)
+                        .map(poc => (
+                          <SelectItem key={poc.id} value={poc.contactName}>
+                            {poc.contactName} ({poc.contactEmail})
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               
               <div>
@@ -173,26 +233,6 @@ export default function AddClientPOCForm({ onClose, onAdd, preselectedClientId }
                   placeholder="Enter contact email"
                   required
                 />
-              </div>
-              
-              <div>
-                <Label htmlFor="salesPIC">Sales PIC *</Label>
-                <Select 
-                  value={formData.salesPIC} 
-                  onValueChange={(value) => setFormData({ ...formData, salesPIC: value })}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select sales person" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {salesStaff.map((staff) => (
-                      <SelectItem key={staff.id} value={staff.id}>
-                        {staff.fullName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
               
               <div>

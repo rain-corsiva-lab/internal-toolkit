@@ -274,12 +274,16 @@ export default function RoleManagement() {
       name: "Client Management",
       key: "clients", 
       subFunctions: [
-        { name: "Add Client", permission: "create" },
-        { name: "View Client", permission: "read" },
-        { name: "Edit Client", permission: "update" },
+        { name: "Add Company", permission: "create" },
+        { name: "View Company", permission: "read" },
+        { name: "Edit Company", permission: "update" },
         { name: "Delete Company", permission: "delete" },
-        { name: "Delete Client POC", permission: "deletePOC" },
-        { name: "Export Contacts", permission: "exportContacts" }
+        { name: "Add Client POC", permission: "addClientPOC" },
+        { name: "View Client POCs Tagged to You", permission: "viewMyClientPOCs" },
+        { name: "View All Client POCs", permission: "viewAllClientPOCs" },
+        { name: "Edit Client POC", permission: "editClientPOC" },
+        { name: "Export Client POCs Tagged to You", permission: "exportMyClientPOCs" },
+        { name: "Export All Client POCs", permission: "exportAllClientPOCs" }
       ]
     }
   ];
