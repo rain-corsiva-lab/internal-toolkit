@@ -10,8 +10,7 @@ import { getSalesStaff, mockClients } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 
 interface ContactSet {
-  contactName: string;
-  salesPIC: string;
+  companyName: string;
   phoneNumber: string;
   email: string;
   status: "Active" | "Inactive";
@@ -21,16 +20,16 @@ interface EditClientPOCFormFullProps {
   poc: ClientPOC;
   onClose: () => void;
   onSave: (updatedPOC: ClientPOC) => void;
+  onDelete: (pocId: string) => void;
 }
 
-export default function EditClientPOCFormFull({ poc, onClose, onSave }: EditClientPOCFormFullProps) {
+export default function EditClientPOCFormFull({ poc, onClose, onSave, onDelete }: EditClientPOCFormFullProps) {
   const { toast } = useToast();
-  const [selectedCompany, setSelectedCompany] = useState(poc.clientId);
+  const [pocName, setPocName] = useState(poc.contactName);
   const [salesPIC, setSalesPIC] = useState(poc.salesPIC);
   const [contactSets, setContactSets] = useState<ContactSet[]>([
     {
-      contactName: poc.contactName,
-      salesPIC: poc.salesPIC,
+      companyName: poc.clientId,
       phoneNumber: poc.contactNumber,
       email: poc.contactEmail,
       status: poc.projectStatus as "Active" | "Inactive"
@@ -42,8 +41,7 @@ export default function EditClientPOCFormFull({ poc, onClose, onSave }: EditClie
 
   const handleAddContactSet = () => {
     setContactSets([...contactSets, {
-      contactName: "",
-      salesPIC: salesPIC,
+      companyName: "",
       phoneNumber: "",
       email: "",
       status: "Active"
@@ -67,10 +65,10 @@ export default function EditClientPOCFormFull({ poc, onClose, onSave }: EditClie
 
     // Validate first contact set
     const firstContact = contactSets[0];
-    if (!firstContact.contactName.trim() || !firstContact.phoneNumber.trim() || !firstContact.email.trim()) {
+    if (!pocName.trim() || !firstContact.companyName.trim() || !firstContact.phoneNumber.trim() || !firstContact.email.trim()) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields for the first contact",
+        description: "Please fill in all required fields",
         variant: "destructive",
       });
       return;
@@ -78,9 +76,9 @@ export default function EditClientPOCFormFull({ poc, onClose, onSave }: EditClie
 
     const updatedPOC: ClientPOC = {
       ...poc,
-      clientId: selectedCompany,
-      contactName: firstContact.contactName,
-      salesPIC: firstContact.salesPIC,
+      clientId: firstContact.companyName,
+      contactName: pocName,
+      salesPIC: salesPIC,
       contactNumber: firstContact.phoneNumber,
       contactEmail: firstContact.email,
       projectStatus: firstContact.status,
@@ -94,6 +92,17 @@ export default function EditClientPOCFormFull({ poc, onClose, onSave }: EditClie
       title: "Success",
       description: "Client POC updated successfully",
     });
+  };
+
+  const handleDelete = () => {
+    if (confirm("Are you sure you want to delete this Client POC? This action cannot be undone.")) {
+      onDelete(poc.id);
+      onClose();
+      toast({
+        title: "Success",
+        description: "Client POC deleted successfully",
+      });
+    }
   };
 
   return (
@@ -114,28 +123,19 @@ export default function EditClientPOCFormFull({ poc, onClose, onSave }: EditClie
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="company">Company *</Label>
-                <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select company" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map(client => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.companyName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="pocName">POC Name *</Label>
+                <Input
+                  id="pocName"
+                  value={pocName}
+                  onChange={(e) => setPocName(e.target.value)}
+                  placeholder="Enter POC name"
+                  required
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="salesPIC">Sales PIC *</Label>
-                <Select value={salesPIC} onValueChange={(value) => {
-                  setSalesPIC(value);
-                  // Update all contact sets with the new sales PIC
-                  setContactSets(contactSets.map(contact => ({ ...contact, salesPIC: value })));
-                }}>
+                <Select value={salesPIC} onValueChange={setSalesPIC}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select sales person" />
                   </SelectTrigger>
@@ -165,19 +165,37 @@ export default function EditClientPOCFormFull({ poc, onClose, onSave }: EditClie
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-base">Contact Set {index + 1}</CardTitle>
+                      {contactSets.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveContactSet(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor={`contactName${index}`}>POC Name *</Label>
-                        <Input
-                          id={`contactName${index}`}
-                          value={contact.contactName}
-                          onChange={(e) => handleContactSetChange(index, 'contactName', e.target.value)}
-                          placeholder="Enter POC name"
-                          required={index === 0}
-                        />
+                        <Label htmlFor={`companyName${index}`}>Company Name *</Label>
+                        <Select
+                          value={contact.companyName}
+                          onValueChange={(value) => handleContactSetChange(index, 'companyName', value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select company" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {clients.map(client => (
+                              <SelectItem key={client.id} value={client.id}>
+                                {client.companyName}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       <div className="space-y-2">
@@ -224,13 +242,18 @@ export default function EditClientPOCFormFull({ poc, onClose, onSave }: EditClie
               ))}
             </div>
 
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
+            <div className="flex justify-between">
+              <Button type="button" variant="destructive" onClick={handleDelete}>
+                Delete Client POC
               </Button>
-              <Button type="submit">
-                Update POC
-              </Button>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  Update POC
+                </Button>
+              </div>
             </div>
           </form>
         </CardContent>

@@ -40,6 +40,12 @@ export interface CRUDPermissions {
 
 export interface ClientPermissions extends CRUDPermissions {
   deletePOC: boolean;
+  addClientPOC: boolean;
+  viewMyClientPOCs: boolean;
+  viewAllClientPOCs: boolean;
+  editClientPOC: boolean;
+  exportMyClientPOCs: boolean;
+  exportAllClientPOCs: boolean;
 }
 
 export interface RolePermissions {

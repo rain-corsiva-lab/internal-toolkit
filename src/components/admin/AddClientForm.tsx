@@ -6,15 +6,17 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Plus, Trash2 } from "lucide-react";
-import { Client } from "@/types/admin";
+import { Client, ClientPOC } from "@/types/admin";
+import { getSalesStaff, mockClientPOCs } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 
 interface AddClientFormProps {
   onClose: () => void;
   onAdd: (client: Client) => void;
+  onAddClientPOC: (poc: ClientPOC) => void;
 }
 
-export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
+export default function AddClientForm({ onClose, onAdd, onAddClientPOC }: AddClientFormProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     companyName: "",
@@ -24,6 +26,18 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
     industry: "",
     customIndustry: ""
   });
+
+  const [pocData, setPocData] = useState({
+    name: "",
+    salesPIC: "",
+    phoneNumber: "",
+    email: "",
+    status: "Active" as "Active" | "Inactive",
+    isNewName: false
+  });
+
+  const salesStaff = getSalesStaff();
+  const existingPOCs = mockClientPOCs;
 
   const industries = [
     "Retail",
@@ -105,6 +119,24 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
     };
 
     onAdd(newClient);
+
+    // Create POC if data is provided
+    if (pocData.name && pocData.salesPIC && pocData.phoneNumber && pocData.email) {
+      const newPOC: ClientPOC = {
+        id: `poc_${Date.now()}`,
+        clientId: newClient.id,
+        contactName: pocData.name,
+        contactNumber: pocData.phoneNumber,
+        contactEmail: pocData.email,
+        designation: "",
+        salesPIC: pocData.salesPIC,
+        projectStatus: pocData.status,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      onAddClientPOC(newPOC);
+    }
+
     toast({
       title: "Success",
       description: "Client added successfully"
@@ -241,6 +273,112 @@ export default function AddClientForm({ onClose, onAdd }: AddClientFormProps) {
                 />
               </div>
             )}
+
+            {/* Client POC Section */}
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="text-lg font-semibold">Client POC (Optional)</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pocName">POC Name</Label>
+                  {pocData.isNewName ? (
+                    <div className="flex gap-2">
+                      <Input
+                        id="pocName"
+                        value={pocData.name}
+                        onChange={(e) => setPocData({ ...pocData, name: e.target.value })}
+                        placeholder="Enter new POC name"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPocData({ ...pocData, isNewName: false, name: "" })}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <Select value={pocData.name} onValueChange={(value) => {
+                      if (value === "add_new") {
+                        setPocData({ ...pocData, isNewName: true, name: "", email: "" });
+                      } else {
+                        const existingPOC = existingPOCs.find(poc => poc.contactName === value && poc.salesPIC === pocData.salesPIC);
+                        setPocData({ 
+                          ...pocData, 
+                          name: value,
+                          email: existingPOC?.contactEmail || ""
+                        });
+                      }
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select existing POC or add new" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="add_new">Add New POC</SelectItem>
+                        {pocData.salesPIC && existingPOCs
+                          .filter(poc => poc.salesPIC === pocData.salesPIC)
+                          .map(poc => (
+                            <SelectItem key={poc.id} value={poc.contactName}>
+                              {poc.contactName} ({poc.contactEmail})
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pocSalesPIC">Sales PIC</Label>
+                  <Select value={pocData.salesPIC} onValueChange={(value) => setPocData({ ...pocData, salesPIC: value, name: "", email: "" })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select sales person" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {salesStaff.map(staff => (
+                        <SelectItem key={staff.id} value={staff.id}>
+                          {staff.fullName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pocPhone">Phone Number</Label>
+                  <Input
+                    id="pocPhone"
+                    value={pocData.phoneNumber}
+                    onChange={(e) => setPocData({ ...pocData, phoneNumber: e.target.value })}
+                    placeholder="Enter phone number"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pocEmail">Email</Label>
+                  <Input
+                    id="pocEmail"
+                    type="email"
+                    value={pocData.email}
+                    onChange={(e) => setPocData({ ...pocData, email: e.target.value })}
+                    placeholder="Enter email"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pocStatus">Status</Label>
+                  <Select value={pocData.status} onValueChange={(value: "Active" | "Inactive") => setPocData({ ...pocData, status: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
 
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={onClose}>

@@ -124,6 +124,10 @@ export default function ClientManagement() {
     setClientPOCs([...clientPOCs, newPOC]);
   };
 
+  const handleDeletePOC = (pocId: string) => {
+    setClientPOCs(clientPOCs.filter(poc => poc.id !== pocId));
+  };
+
   const handleTogglePOCStatus = (pocId: string) => {
     setClientPOCs(clientPOCs.map(poc => 
       poc.id === pocId 
@@ -376,16 +380,16 @@ export default function ClientManagement() {
                            <TableCell>{salesPerson?.fullName || "Unknown"}</TableCell>
                            <TableCell>
                              <div className="flex items-center gap-2">
-                               <Button 
-                                 variant="ghost" 
-                                 size="sm"
-                                 onClick={() => {
-                                   setSelectedPOC(poc);
-                                   setShowEditPOCForm(true);
-                                 }}
-                               >
-                                 <Edit className="h-4 w-4" />
-                               </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedPOC(poc);
+                                    setShowEditPOCForm(true);
+                                  }}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
                              </div>
                            </TableCell>
                         </TableRow>
@@ -456,6 +460,7 @@ export default function ClientManagement() {
         <AddClientForm 
           onClose={() => setShowAddForm(false)}
           onAdd={handleAddClient}
+          onAddClientPOC={handleAddClientPOC}
         />
       )}
 
@@ -494,6 +499,7 @@ export default function ClientManagement() {
               description: "POC updated successfully",
             });
           }}
+          onDelete={handleDeletePOC}
         />
       )}
     </div>

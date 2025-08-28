@@ -26,14 +26,38 @@ export default function RoleManagement() {
   const [newRolePermissions, setNewRolePermissions] = useState<RolePermissions>({
     staff: { create: false, read: false, update: false, delete: false },
     roles: { create: false, read: false, update: false, delete: false },
-    clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
+    clients: { 
+      create: false, 
+      read: false, 
+      update: false, 
+      delete: false, 
+      deletePOC: false,
+      addClientPOC: false,
+      viewMyClientPOCs: false,
+      viewAllClientPOCs: false,
+      editClientPOC: false,
+      exportMyClientPOCs: false,
+      exportAllClientPOCs: false
+    },
     exportContacts: false
   });
   const [editRoleName, setEditRoleName] = useState("");
   const [editRolePermissions, setEditRolePermissions] = useState<RolePermissions>({
     staff: { create: false, read: false, update: false, delete: false },
     roles: { create: false, read: false, update: false, delete: false },
-    clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
+    clients: { 
+      create: false, 
+      read: false, 
+      update: false, 
+      delete: false, 
+      deletePOC: false,
+      addClientPOC: false,
+      viewMyClientPOCs: false,
+      viewAllClientPOCs: false,
+      editClientPOC: false,
+      exportMyClientPOCs: false,
+      exportAllClientPOCs: false
+    },
     exportContacts: false
   });
 
@@ -142,7 +166,19 @@ export default function RoleManagement() {
     setEditRolePermissions({
       staff: { create: false, read: false, update: false, delete: false },
       roles: { create: false, read: false, update: false, delete: false },
-      clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
+      clients: { 
+        create: false, 
+        read: false, 
+        update: false, 
+        delete: false, 
+        deletePOC: false,
+        addClientPOC: false,
+        viewMyClientPOCs: false,
+        viewAllClientPOCs: false,
+        editClientPOC: false,
+        exportMyClientPOCs: false,
+        exportAllClientPOCs: false
+      },
       exportContacts: false
     });
     setEditingRole(null);
@@ -177,7 +213,19 @@ export default function RoleManagement() {
     setNewRolePermissions({
       staff: { create: false, read: false, update: false, delete: false },
       roles: { create: false, read: false, update: false, delete: false },
-      clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
+      clients: { 
+        create: false, 
+        read: false, 
+        update: false, 
+        delete: false, 
+        deletePOC: false,
+        addClientPOC: false,
+        viewMyClientPOCs: false,
+        viewAllClientPOCs: false,
+        editClientPOC: false,
+        exportMyClientPOCs: false,
+        exportAllClientPOCs: false
+      },
       exportContacts: false
     });
     setShowCreateRoleForm(false);
@@ -482,7 +530,19 @@ export default function RoleManagement() {
               setEditRolePermissions({
                 staff: { create: false, read: false, update: false, delete: false },
                 roles: { create: false, read: false, update: false, delete: false },
-                clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
+                clients: { 
+                  create: false, 
+                  read: false, 
+                  update: false, 
+                  delete: false, 
+                  deletePOC: false,
+                  addClientPOC: false,
+                  viewMyClientPOCs: false,
+                  viewAllClientPOCs: false,
+                  editClientPOC: false,
+                  exportMyClientPOCs: false,
+                  exportAllClientPOCs: false
+                },
                 exportContacts: false
               });
             }}>

@@ -84,35 +84,95 @@ export const mockStaff: Staff[] = [
 const managementPermissions: RolePermissions = {
   staff: { create: true, read: true, update: true, delete: true },
   roles: { create: true, read: true, update: true, delete: true },
-  clients: { create: true, read: true, update: true, delete: true, deletePOC: true },
+  clients: { 
+    create: true, 
+    read: true, 
+    update: true, 
+    delete: true, 
+    deletePOC: true,
+    addClientPOC: true,
+    viewMyClientPOCs: true,
+    viewAllClientPOCs: true,
+    editClientPOC: true,
+    exportMyClientPOCs: true,
+    exportAllClientPOCs: true
+  },
   exportContacts: true
 };
 
 const salesPermissions: RolePermissions = {
   staff: { create: false, read: false, update: false, delete: false },
   roles: { create: false, read: false, update: false, delete: false },
-  clients: { create: true, read: true, update: true, delete: false, deletePOC: false },
+  clients: { 
+    create: true, 
+    read: true, 
+    update: true, 
+    delete: false, 
+    deletePOC: false,
+    addClientPOC: true,
+    viewMyClientPOCs: true,
+    viewAllClientPOCs: false,
+    editClientPOC: true,
+    exportMyClientPOCs: true,
+    exportAllClientPOCs: false
+  },
   exportContacts: false
 };
 
 const projectPermissions: RolePermissions = {
   staff: { create: false, read: false, update: false, delete: false },
   roles: { create: false, read: false, update: false, delete: false },
-  clients: { create: false, read: true, update: false, delete: false, deletePOC: false },
+  clients: { 
+    create: false, 
+    read: true, 
+    update: false, 
+    delete: false, 
+    deletePOC: false,
+    addClientPOC: false,
+    viewMyClientPOCs: true,
+    viewAllClientPOCs: false,
+    editClientPOC: false,
+    exportMyClientPOCs: false,
+    exportAllClientPOCs: false
+  },
   exportContacts: false
 };
 
 const designerPermissions: RolePermissions = {
   staff: { create: false, read: false, update: false, delete: false },
   roles: { create: false, read: false, update: false, delete: false },
-  clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
+  clients: { 
+    create: false, 
+    read: false, 
+    update: false, 
+    delete: false, 
+    deletePOC: false,
+    addClientPOC: false,
+    viewMyClientPOCs: false,
+    viewAllClientPOCs: false,
+    editClientPOC: false,
+    exportMyClientPOCs: false,
+    exportAllClientPOCs: false
+  },
   exportContacts: false
 };
 
 const developerPermissions: RolePermissions = {
   staff: { create: false, read: false, update: false, delete: false },
   roles: { create: false, read: false, update: false, delete: false },
-  clients: { create: false, read: false, update: false, delete: false, deletePOC: false },
+  clients: { 
+    create: false, 
+    read: false, 
+    update: false, 
+    delete: false, 
+    deletePOC: false,
+    addClientPOC: false,
+    viewMyClientPOCs: false,
+    viewAllClientPOCs: false,
+    editClientPOC: false,
+    exportMyClientPOCs: false,
+    exportAllClientPOCs: false
+  },
   exportContacts: false
 };
 
