@@ -129,8 +129,8 @@ const projectPermissions: RolePermissions = {
     delete: false, 
     deletePOC: false,
     addClientPOC: false,
-    viewMyClientPOCs: true,
-    viewAllClientPOCs: false,
+    viewMyClientPOCs: false,
+    viewAllClientPOCs: true,
     editClientPOC: false,
     exportMyClientPOCs: false,
     exportAllClientPOCs: false

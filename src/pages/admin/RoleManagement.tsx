@@ -282,6 +282,7 @@ export default function RoleManagement() {
         { name: "View Client POCs Tagged to You", permission: "viewMyClientPOCs" },
         { name: "View All Client POCs", permission: "viewAllClientPOCs" },
         { name: "Edit Client POC", permission: "editClientPOC" },
+        { name: "Delete Client POC", permission: "deletePOC" },
         { name: "Export Client POCs Tagged to You", permission: "exportMyClientPOCs" },
         { name: "Export All Client POCs", permission: "exportAllClientPOCs" }
       ]
