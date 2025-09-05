@@ -9,7 +9,9 @@ import {
   X,
   LayoutDashboard,
   User,
-  LogOut
+  LogOut,
+  Calculator,
+  FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +20,8 @@ const navigation = [
   { name: "Staff Management", href: "/staff", icon: Users },
   { name: "Role Management", href: "/roles", icon: Shield },
   { name: "Client Management", href: "/clients", icon: Building2 },
+  { name: "Cost Version", href: "/cost-version", icon: Calculator },
+  { name: "Costing Calculator", href: "/costing-calculator", icon: FileText },
 ];
 
 export default function AdminLayout() {
@@ -110,10 +114,13 @@ export default function AdminLayout() {
           
           <div className="flex-1">
             <h2 className="text-lg font-semibold">
-              {navigation.find(item => 
-                location.pathname === item.href || 
-                (item.href !== "/" && location.pathname.startsWith(item.href))
-              )?.name || "Dashboard"}
+              {(() => {
+                const currentNav = navigation.find(item => 
+                  location.pathname === item.href || 
+                  (item.href !== "/" && location.pathname.startsWith(item.href))
+                );
+                return currentNav?.name || "Dashboard";
+              })()}
             </h2>
           </div>
 

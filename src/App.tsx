@@ -11,6 +11,8 @@ import RoleManagement from "./pages/admin/RoleManagement";
 import ClientManagement from "./pages/admin/ClientManagement";
 import ClientDetail from "./pages/admin/ClientDetail";
 import Profile from "./pages/admin/Profile";
+import CostVersion from "./pages/admin/CostVersion";
+import CostingCalculator from "./pages/admin/CostingCalculator";
 
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
             <Route path="roles" element={<RoleManagement />} />
             <Route path="clients" element={<ClientManagement />} />
             <Route path="clients/:id" element={<ClientDetail />} />
+            <Route path="cost-version" element={<CostVersion />} />
+            <Route path="costing-calculator" element={<CostingCalculator />} />
             <Route path="profile" element={<Profile />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

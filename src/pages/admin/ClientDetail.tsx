@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Building2, Users, MapPin, Phone, Mail, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Building2, Users, MapPin, Phone, Mail, Edit, Trash2, FileText, Plus } from "lucide-react";
 import { getClientById, getClientPOCsByClient, getSalesStaff } from "@/data/mockData";
 import EditClientPOCForm from "@/components/admin/EditClientPOCForm";
 import AddClientPOCForm from "@/components/admin/AddClientPOCForm";
@@ -195,6 +195,34 @@ export default function ClientDetail() {
               <p className="text-sm text-muted-foreground">{address.address}</p>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      {/* Quotations */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Quotations
+              </CardTitle>
+              <CardDescription>
+                All quotations generated for this company
+              </CardDescription>
+            </div>
+            <Button onClick={() => navigate("/costing-calculator")}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Quotation
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-muted-foreground">
+            <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>No quotations found for this company</p>
+            <p className="text-sm">Create a new quotation to get started</p>
+          </div>
         </CardContent>
       </Card>
 
