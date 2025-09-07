@@ -1012,6 +1012,11 @@ const CostingCalculator = () => {
                         </DialogHeader>
                         <AddClientPOCForm 
                           onClose={() => setAddPOCDialogOpen(false)}
+                          onAdd={(newPOC) => {
+                            setAddPOCDialogOpen(false);
+                            setSelectedClientPOC(newPOC.id);
+                          }}
+                          preselectedClientId={selectedCompany}
                         />
                       </DialogContent>
                     </Dialog>
