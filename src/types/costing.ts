@@ -3,7 +3,8 @@ export interface CostItem {
   id: string;
   type: 'per_manhour' | 'fixed';
   description: string;
-  cost: number;
+  costSGD: number;
+  costMYR: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,9 +36,10 @@ export interface BaseQuotation {
   clientId: string;
   clientPOCId: string;
   salesPIC: string;
-  billingAddress: string;
+  projectName: string;
   projectType: ProjectType;
   totalCost: number;
+  currency: 'SGD' | 'MYR';
   costVersionId: string;
   createdAt: string;
   updatedAt: string;

@@ -13,7 +13,8 @@ import { getStaffById } from "@/data/mockData";
 
 const CostVersion = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState<number>(0);
+  const [editValueSGD, setEditValueSGD] = useState<number>(0);
+  const [editValueMYR, setEditValueMYR] = useState<number>(0);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   
   const activeCostVersion = getActiveCostVersion();
@@ -22,18 +23,21 @@ const CostVersion = () => {
 
   const handleEditClick = (item: CostItem) => {
     setEditingId(item.id);
-    setEditValue(item.cost);
+    setEditValueSGD(item.costSGD);
+    setEditValueMYR(item.costMYR);
   };
 
   const handleSave = () => {
     // In a real app, this would make an API call
     setEditingId(null);
-    setEditValue(0);
+    setEditValueSGD(0);
+    setEditValueMYR(0);
   };
 
   const handleCancel = () => {
     setEditingId(null);
-    setEditValue(0);
+    setEditValueSGD(0);
+    setEditValueMYR(0);
   };
 
   const CostItemRow = ({ item }: { item: CostItem }) => (
@@ -41,23 +45,40 @@ const CostVersion = () => {
       <TableCell className="font-medium">{item.description}</TableCell>
       <TableCell>
         {editingId === item.id ? (
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              value={editValue}
-              onChange={(e) => setEditValue(Number(e.target.value))}
-              className="w-24"
-            />
-            <Button size="sm" variant="outline" onClick={handleSave}>
-              <Save className="h-4 w-4" />
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleCancel}>
-              <X className="h-4 w-4" />
-            </Button>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Label className="text-xs">SGD</Label>
+              <Input
+                type="number"
+                value={editValueSGD}
+                onChange={(e) => setEditValueSGD(Number(e.target.value))}
+                className="w-20"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Label className="text-xs">MYR</Label>
+              <Input
+                type="number"
+                value={editValueMYR}
+                onChange={(e) => setEditValueMYR(Number(e.target.value))}
+                className="w-20"
+              />
+            </div>
+            <div className="flex gap-1">
+              <Button size="sm" variant="outline" onClick={handleSave}>
+                <Save className="h-4 w-4" />
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleCancel}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <span>${item.cost}</span>
+            <div className="space-y-1">
+              <div className="text-sm">SGD ${item.costSGD}</div>
+              <div className="text-sm">MYR ${item.costMYR}</div>
+            </div>
             <Button size="sm" variant="ghost" onClick={() => handleEditClick(item)}>
               <Edit2 className="h-4 w-4" />
             </Button>
@@ -109,7 +130,10 @@ const CostVersion = () => {
                         {version.costItems.filter(item => item.type === 'per_manhour').map(item => (
                           <div key={item.id} className="flex justify-between text-sm">
                             <span>{item.description}</span>
-                            <span>${item.cost}</span>
+                            <div>
+                              <div>SGD ${item.costSGD}</div>
+                              <div>MYR ${item.costMYR}</div>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -118,7 +142,10 @@ const CostVersion = () => {
                         {version.costItems.filter(item => item.type === 'fixed').map(item => (
                           <div key={item.id} className="flex justify-between text-sm">
                             <span>{item.description}</span>
-                            <span>${item.cost}</span>
+                            <div>
+                              <div>SGD ${item.costSGD}</div>
+                              <div>MYR ${item.costMYR}</div>
+                            </div>
                           </div>
                         ))}
                       </div>

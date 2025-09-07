@@ -3,17 +3,17 @@ import { CostVersion, CostItem, Quotation } from "@/types/costing";
 // Mock Cost Items for current version
 export const mockCostItems: CostItem[] = [
   // Per manhour costs
-  { id: "1", type: "per_manhour", description: "Unique Pages", cost: 150, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "2", type: "per_manhour", description: "Repetitive Pages", cost: 100, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "3", type: "per_manhour", description: "Short Pages", cost: 75, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "4", type: "per_manhour", description: "Design", cost: 120, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "5", type: "per_manhour", description: "Programming", cost: 140, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "1", type: "per_manhour", description: "Unique Pages", costSGD: 150, costMYR: 480, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "2", type: "per_manhour", description: "Repetitive Pages", costSGD: 100, costMYR: 320, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "3", type: "per_manhour", description: "Short Pages", costSGD: 75, costMYR: 240, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "4", type: "per_manhour", description: "Design", costSGD: 120, costMYR: 385, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "5", type: "per_manhour", description: "Programming", costSGD: 140, costMYR: 450, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
   
   // Fixed costs
-  { id: "6", type: "fixed", description: "AI Chatbot", cost: 5000, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "7", type: "fixed", description: "PSG Package A", cost: 8000, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "8", type: "fixed", description: "PSG Package B", cost: 12000, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "9", type: "fixed", description: "PSG Package C", cost: 18000, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" }
+  { id: "6", type: "fixed", description: "AI Chatbot", costSGD: 5000, costMYR: 16000, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "7", type: "fixed", description: "PSG Package A", costSGD: 8000, costMYR: 25600, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "8", type: "fixed", description: "PSG Package B", costSGD: 12000, costMYR: 38400, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "9", type: "fixed", description: "PSG Package C", costSGD: 18000, costMYR: 57600, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" }
 ];
 
 // Mock Cost Versions
@@ -30,15 +30,15 @@ export const mockCostVersions: CostVersion[] = [
     id: "2",
     version: "v0.9",
     costItems: [
-      { id: "1", type: "per_manhour", description: "Unique Pages", cost: 140, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "2", type: "per_manhour", description: "Repetitive Pages", cost: 90, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "3", type: "per_manhour", description: "Short Pages", cost: 70, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "4", type: "per_manhour", description: "Design", cost: 110, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "5", type: "per_manhour", description: "Programming", cost: 130, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "6", type: "fixed", description: "AI Chatbot", cost: 4500, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "7", type: "fixed", description: "PSG Package A", cost: 7500, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "8", type: "fixed", description: "PSG Package B", cost: 11000, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "9", type: "fixed", description: "PSG Package C", cost: 16000, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" }
+      { id: "1", type: "per_manhour", description: "Unique Pages", costSGD: 140, costMYR: 450, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "2", type: "per_manhour", description: "Repetitive Pages", costSGD: 90, costMYR: 290, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "3", type: "per_manhour", description: "Short Pages", costSGD: 70, costMYR: 225, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "4", type: "per_manhour", description: "Design", costSGD: 110, costMYR: 355, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "5", type: "per_manhour", description: "Programming", costSGD: 130, costMYR: 420, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "6", type: "fixed", description: "AI Chatbot", costSGD: 4500, costMYR: 14400, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "7", type: "fixed", description: "PSG Package A", costSGD: 7500, costMYR: 24000, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "8", type: "fixed", description: "PSG Package B", costSGD: 11000, costMYR: 35200, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "9", type: "fixed", description: "PSG Package C", costSGD: 16000, costMYR: 51200, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" }
     ],
     createdAt: "2023-12-01T00:00:00Z",
     createdBy: "1",
@@ -53,9 +53,10 @@ export const mockQuotations: Quotation[] = [
     clientId: "1", // Tech Innovations Pte Ltd
     clientPOCId: "1", // Michael Tan
     salesPIC: "2", // Sarah Johnson
-    billingAddress: "1 Raffles Place, Singapore 048616",
+    projectName: "Corporate Website Redesign",
     projectType: "Corporate Websites",
     totalCost: 15000,
+    currency: "SGD",
     costVersionId: "1",
     version: 1,
     createdAt: "2024-01-06T00:00:00Z",
@@ -95,8 +96,10 @@ export const mockQuotations: Quotation[] = [
 export const getActiveCostVersion = () => 
   mockCostVersions.find(version => version.isActive);
 
-export const getCostByDescription = (description: string) =>
-  mockCostItems.find(item => item.description === description)?.cost || 0;
+export const getCostByDescription = (description: string, currency: 'SGD' | 'MYR' = 'SGD') => {
+  const item = mockCostItems.find(item => item.description === description);
+  return currency === 'SGD' ? (item?.costSGD || 0) : (item?.costMYR || 0);
+};
 
 export const getQuotationsByClient = (clientId: string) =>
   mockQuotations.filter(quotation => quotation.clientId === clientId);

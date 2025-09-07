@@ -120,4 +120,15 @@ export interface POCFilters {
   search?: string;
 }
 
+export interface Project {
+  id: string;
+  clientId: string;
+  quotationId: string;
+  projectName: string;
+  billingAddress: string;
+  status: 'active' | 'completed' | 'on-hold';
+  createdAt: string;
+  updatedAt: string;
+}
+
 export * from "./costing";
