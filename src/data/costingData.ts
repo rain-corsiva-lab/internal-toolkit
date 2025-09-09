@@ -10,10 +10,10 @@ export const mockCostItems: CostItem[] = [
   { id: "5", type: "per_manhour", description: "Programming", costSGD: 140, costMYR: 450, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
   
   // Fixed costs
-  { id: "6", type: "fixed", description: "AI Chatbot", costSGD: 5000, costMYR: 16000, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "7", type: "fixed", description: "PSG Package A", costSGD: 8000, costMYR: 25600, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "8", type: "fixed", description: "PSG Package B", costSGD: 12000, costMYR: 38400, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "9", type: "fixed", description: "PSG Package C", costSGD: 18000, costMYR: 57600, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" }
+  { id: "6", type: "fixed", description: "AI Chatbot", costSGD: 5000, costMYR: 0, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "7", type: "fixed", description: "PSG Package A", costSGD: 8000, costMYR: 0, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "8", type: "fixed", description: "PSG Package B", costSGD: 12000, costMYR: 0, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "9", type: "fixed", description: "PSG Package C", costSGD: 18000, costMYR: 0, createdAt: "2024-01-01T00:00:00Z", updatedAt: "2024-01-01T00:00:00Z" }
 ];
 
 // Mock Cost Versions
@@ -35,10 +35,10 @@ export const mockCostVersions: CostVersion[] = [
       { id: "3", type: "per_manhour", description: "Short Pages", costSGD: 70, costMYR: 225, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
       { id: "4", type: "per_manhour", description: "Design", costSGD: 110, costMYR: 355, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
       { id: "5", type: "per_manhour", description: "Programming", costSGD: 130, costMYR: 420, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "6", type: "fixed", description: "AI Chatbot", costSGD: 4500, costMYR: 14400, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "7", type: "fixed", description: "PSG Package A", costSGD: 7500, costMYR: 24000, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "8", type: "fixed", description: "PSG Package B", costSGD: 11000, costMYR: 35200, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
-      { id: "9", type: "fixed", description: "PSG Package C", costSGD: 16000, costMYR: 51200, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" }
+      { id: "6", type: "fixed", description: "AI Chatbot", costSGD: 4500, costMYR: 0, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "7", type: "fixed", description: "PSG Package A", costSGD: 7500, costMYR: 0, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "8", type: "fixed", description: "PSG Package B", costSGD: 11000, costMYR: 0, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" },
+      { id: "9", type: "fixed", description: "PSG Package C", costSGD: 16000, costMYR: 0, createdAt: "2023-12-01T00:00:00Z", updatedAt: "2023-12-01T00:00:00Z" }
     ],
     createdAt: "2023-12-01T00:00:00Z",
     createdBy: "1",

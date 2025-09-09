@@ -40,7 +40,7 @@ const CostVersion = () => {
     setEditValueMYR(0);
   };
 
-  const CostItemRow = ({ item }: { item: CostItem }) => (
+  const CostItemRowPerManhour = ({ item }: { item: CostItem }) => (
     <TableRow key={item.id}>
       <TableCell className="font-medium">{item.description}</TableCell>
       <TableCell>
@@ -79,6 +79,42 @@ const CostVersion = () => {
               <div className="text-sm">SGD ${item.costSGD}</div>
               <div className="text-sm">MYR ${item.costMYR}</div>
             </div>
+            <Button size="sm" variant="ghost" onClick={() => handleEditClick(item)}>
+              <Edit2 className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </TableCell>
+    </TableRow>
+  );
+
+  const CostItemRowFixed = ({ item }: { item: CostItem }) => (
+    <TableRow key={item.id}>
+      <TableCell className="font-medium">{item.description}</TableCell>
+      <TableCell>
+        {editingId === item.id ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Label className="text-xs">SGD</Label>
+              <Input
+                type="number"
+                value={editValueSGD}
+                onChange={(e) => setEditValueSGD(Number(e.target.value))}
+                className="w-20"
+              />
+            </div>
+            <div className="flex gap-1">
+              <Button size="sm" variant="outline" onClick={handleSave}>
+                <Save className="h-4 w-4" />
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleCancel}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <div className="text-sm">SGD ${item.costSGD}</div>
             <Button size="sm" variant="ghost" onClick={() => handleEditClick(item)}>
               <Edit2 className="h-4 w-4" />
             </Button>
@@ -142,10 +178,7 @@ const CostVersion = () => {
                         {version.costItems.filter(item => item.type === 'fixed').map(item => (
                           <div key={item.id} className="flex justify-between text-sm">
                             <span>{item.description}</span>
-                            <div>
-                              <div>SGD ${item.costSGD}</div>
-                              <div>MYR ${item.costMYR}</div>
-                            </div>
+                            <div>SGD ${item.costSGD}</div>
                           </div>
                         ))}
                       </div>
@@ -174,7 +207,7 @@ const CostVersion = () => {
               </TableHeader>
               <TableBody>
                 {perManhourCosts.map((item) => (
-                  <CostItemRow key={item.id} item={item} />
+                  <CostItemRowPerManhour key={item.id} item={item} />
                 ))}
               </TableBody>
             </Table>
@@ -196,7 +229,7 @@ const CostVersion = () => {
               </TableHeader>
               <TableBody>
                 {fixedCosts.map((item) => (
-                  <CostItemRow key={item.id} item={item} />
+                  <CostItemRowFixed key={item.id} item={item} />
                 ))}
               </TableBody>
             </Table>

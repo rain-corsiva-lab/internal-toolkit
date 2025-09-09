@@ -21,7 +21,7 @@ const CostingCalculator = () => {
   const [projectName, setProjectName] = useState("");
   const [projectType, setProjectType] = useState<ProjectType | "">("");
   const [totalCost, setTotalCost] = useState(0);
-  const [costBreakdown, setCostBreakdown] = useState<{description: string; cost: number}[]>([]);
+  const [costBreakdown, setCostBreakdown] = useState<{description: string; cost: number; isFixedCost?: boolean}[]>([]);
   
   // Corporate Websites fields
   const [uniquePages, setUniquePages] = useState(0);
@@ -56,34 +56,34 @@ const CostingCalculator = () => {
   // Calculate total cost in real-time
   useEffect(() => {
     let cost = 0;
-    const breakdown: {description: string; cost: number}[] = [];
+    const breakdown: {description: string; cost: number; isFixedCost?: boolean}[] = [];
     
     switch (projectType) {
       case "AI Chatbot Project":
-        const chatbotCost = getCostByDescription("AI Chatbot", currency);
+        const chatbotCost = getCostByDescription("AI Chatbot", "SGD"); // Fixed costs are only in SGD
         cost = chatbotCost;
-        breakdown.push({description: "AI Chatbot", cost: chatbotCost});
+        breakdown.push({description: "AI Chatbot", cost: chatbotCost, isFixedCost: true});
         break;
       case "PSG Project - Package A":
-        const packageACost = getCostByDescription("PSG Package A", currency);
+        const packageACost = getCostByDescription("PSG Package A", "SGD"); // Fixed costs are only in SGD
         cost = packageACost;
-        breakdown.push({description: "PSG Package A", cost: packageACost});
+        breakdown.push({description: "PSG Package A", cost: packageACost, isFixedCost: true});
         break;
       case "PSG Project - Package B":
-        const packageBCost = getCostByDescription("PSG Package B", currency);
+        const packageBCost = getCostByDescription("PSG Package B", "SGD"); // Fixed costs are only in SGD
         cost = packageBCost;
-        breakdown.push({description: "PSG Package B", cost: packageBCost});
+        breakdown.push({description: "PSG Package B", cost: packageBCost, isFixedCost: true});
         break;
       case "PSG Project - Package C":
-        const packageCCost = getCostByDescription("PSG Package C", currency);
+        const packageCCost = getCostByDescription("PSG Package C", "SGD"); // Fixed costs are only in SGD
         cost = packageCCost;
-        breakdown.push({description: "PSG Package C", cost: packageCCost});
+        breakdown.push({description: "PSG Package C", cost: packageCCost, isFixedCost: true});
         break;
       case "E-commerce Websites Project":
         // Fixed cost for e-commerce - using PSG Package B cost as baseline
-        const ecommerceCost = getCostByDescription("PSG Package B", currency);
+        const ecommerceCost = getCostByDescription("PSG Package B", "SGD"); // Fixed costs are only in SGD
         cost = ecommerceCost;
-        breakdown.push({description: "E-commerce Website", cost: ecommerceCost});
+        breakdown.push({description: "E-commerce Website", cost: ecommerceCost, isFixedCost: true});
         break;
       case "Corporate Websites":
         const uniquePagesCost = uniquePages * getCostByDescription("Unique Pages", currency);
@@ -1076,7 +1076,7 @@ const CostingCalculator = () => {
                 {costBreakdown.map((item, index) => (
                   <div key={index} className="flex justify-between text-sm">
                     <span>{item.description}</span>
-                    <span>{currency} ${item.cost.toLocaleString()}</span>
+                    <span>{item.isFixedCost ? 'SGD' : currency} ${item.cost.toLocaleString()}</span>
                   </div>
                 ))}
                 <Separator />
